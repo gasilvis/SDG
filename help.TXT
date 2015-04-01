@@ -1,0 +1,72 @@
+
+The SID Data Grabber is an application to help prepare an AAVSO SID report file from your SIDmonitor log files. It offers a zoomable graphical view of the log data where you can click the graph to grab the times and then it puts it into the AAVSO format report file, ready for submission at the end of the month.
+
+First step is to set your observer id and the directory of the report files.
+
+From there you select a batch of observation files. These files need to be in the SuperSID format (txt or csv) with header information and the timeseries data spanning one day. For example:
+# StationID = HWU
+# Frequency = 18300
+2015-03-01 00:00:00, 50885.6558753
+2015-03-01 00:00:05, 50885.6558753
+2015-03-01 00:00:10, 50885.6558753
+
+If your log files are in a different format but have the same data, contact me and I'll see about making modifications to the application for you. A141@GASilvis.net.
+
+If you see a flare event in the graph, zoom in on it by drawing a box around it. It's helpful to be looking at your data on the Stanford website at the same time as there it will show you the graphed data as well as indication of known events. With the zoom you will then have the resolution to accurately pick the time to the minute by clicking on the graph. After clicking on start, max and end review the importance computed and set the definiteness field. You can add D, E and U modifiers to the edit boxes as appropriate. Now you can click the "add to report" button. 
+
+When you click on the graph the time will be put in the edit box with the radio check box lit. These will light up in turn. If you need to go back and change an entry, just reclick the radio icon so that your graph click will go to the right place.
+
+Report files are named <observer ID><year><mo>.txt. The appropriate report file is opened based on the log file graph you are using. You can edit the file directly from the Report tab (eg, to remove a record) and then you need to save the updated report with your edits.
+
+The Next/Prev File buttons take you through the list of files you selected with the File/Open process.
+
+The main screen, the Graph tab, will show you the last log file that you processed. Helpful if you are scanning the files once a week as it shows you where you left off.
+
+If you have a graph open and your data is also on the Stanford SID Data Access website, you can click on the button below the graph and view that data in a browser. This is handy as that display will include the known flares on the graph.
+
+
+Instructions for extracting the event times and report format is taken from:
+http://www.aavso.org/reducing-data-gathered-vlf-monitoring-systems
+with minor modifications.
+
+Reducing Data Gathered by VLF Monitoring Systems
+(Extracted from SID Technical Bulletin Vol. 3, Number 4, Oct. 1992)
+
+The reduction process is quite simple, and consists of the steps which follow. First, the universal time for each of three event-phases must be measured for each SID. 
+
+Event Start: The moment when an event begins. Be aware that the amplitude of different events varies considerably, and some may appear in inverted form. If it is obvious that an event began before the first definable start time, an 'E' (before) is appended to the recorded time. Look for the beginning of the sharp rise, same as for the event max (see below).
+
+Event End: Of the three times, the end time is the most difficult to determine. It is defined as the moment when the trace returns to the diurnal trend line, or is interrupted by the onset of a new event. In the latter situation, the letter 'D' (after) is appended to that time, which in turn becomes the start time for the following event.
+
+Event Maximum: The moment when the ascending (descending in the case of inverted events) branch slows its sharp rise. Note that this generally does not coincide with the event's peak amplitude.
+
+If the trace goes off-scale as maximum is approached, or is interfered with in some other manner such as the onset of sunset, device failure, etc., we append a 'U' (uncertain) to the last identifiable time. For example, if the SID maximum occurs somewhere off-scale and the last determinable time is fourteen hours, ten minutes (1410), the time is recorded as 141OU.
+
+Duration		Importance
+< 19 minutes	1-
+19-25		1
+26-32		1+
+33-45		2
+46-85		2+
+86-125		3
+>125		3+
+After each of these times have been recorded, the event's 'Importance' and 'Definiteness' ratings can be determined. Importance generally refers to the length of an event, found by subtracting the start time from the end time. This is computed automatically for you. The table above associates the Importance rating with event duration.
+
+With respect to the observer's typical daily trace, a class 1 SID is an event with small intensity change and a relatively short duration. Class 2 is a moderate intensity event with a fairly long duration, and a class 3 describes a SID with a 'great' change in intensity and long duration.
+
+Confidence		Definition
+Questionable		0
+Possible			1
+Fair			2
+Reasonable		3
+Reasonably Definite		4
+Definite			5
+Definition is a subjective estimate of an observer's confidence in the event. Normally, the events which are included in our reports have Definitions equal to 3 or greater. Use the right-hand scale as a guide to Definition. Careful study and experience teaches observers how to recognize false SID events caused by man-made interference. Beginners should not hesitate to assign high Definition values to those events which are not correlated with known noise sources. Other observers' results will be compared to eliminate suspect events before a final report is submitted to the NGDC.
+
+
+Sometimes you need to shut down the sidmonitor. Before you do you should save the buffered data of the last day. What can you do with that data? This application has a tool for recovering this data into log files (with just part of a days data) that can then be surveyed with the grabber tool. See the Buffer tab. 
+
+
+Any problems with this program or suggestions for improvement, please email me at A141@GASilvis.net.
+
+George
