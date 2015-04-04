@@ -1,6 +1,6 @@
 object Form1: TForm1
-  Left = 420
-  Top = 104
+  Left = 325
+  Top = 119
   Width = 979
   Height = 741
   HorzScrollBar.Visible = False
@@ -54,23 +54,31 @@ object Form1: TForm1
       end
       object Label4: TLabel
         Left = 240
-        Top = 48
+        Top = 64
         Width = 59
         Height = 23
         Caption = 'Label4'
       end
       object Label6: TLabel
         Left = 240
-        Top = 16
+        Top = 32
         Width = 107
         Height = 23
         Caption = 'Last log file:'
       end
       object lastFileLabel: TLabel
         Left = 350
-        Top = 16
+        Top = 32
         Width = 6
         Height = 23
+      end
+      object versionLabel: TLabel
+        Left = 320
+        Top = 0
+        Width = 48
+        Height = 23
+        Caption = '        '
+        OnClick = versionLabelClick
       end
       object Chart1: TChart
         Left = 8
@@ -126,7 +134,7 @@ object Form1: TForm1
       end
       object GroupBox1: TGroupBox
         Left = 16
-        Top = 88
+        Top = 96
         Width = 713
         Height = 89
         Caption = 'Event'
@@ -228,7 +236,7 @@ object Form1: TForm1
           Left = 552
           Top = 48
           Width = 145
-          Height = 25
+          Height = 28
           Caption = 'add to report'
           TabOrder = 7
           OnClick = addButtonClick
@@ -253,7 +261,7 @@ object Form1: TForm1
         Left = 720
         Top = 192
         Width = 105
-        Height = 25
+        Height = 28
         Caption = 'Next File'
         TabOrder = 3
         OnClick = Button1Click
@@ -262,7 +270,7 @@ object Form1: TForm1
         Left = 456
         Top = 192
         Width = 97
-        Height = 25
+        Height = 28
         Hint = 'Zoom by drawing a box. Unzoom my clicking here'
         Caption = 'un Zoom'
         TabOrder = 4
@@ -272,16 +280,16 @@ object Form1: TForm1
         Left = 616
         Top = 192
         Width = 89
-        Height = 25
+        Height = 28
         Caption = 'Prev File'
         TabOrder = 5
         OnClick = Button3Click
       end
       object reportDirSelect: TButton
         Left = 32
-        Top = 48
+        Top = 64
         Width = 185
-        Height = 25
+        Height = 28
         Caption = 'Set report file dir'
         TabOrder = 6
         OnClick = reportDirSelectClick
@@ -290,7 +298,7 @@ object Form1: TForm1
         Left = 864
         Top = 192
         Width = 75
-        Height = 25
+        Height = 28
         Caption = 'Open'
         TabOrder = 7
         OnClick = Open1Click
@@ -299,7 +307,7 @@ object Form1: TForm1
         Left = 56
         Top = 608
         Width = 377
-        Height = 25
+        Height = 28
         Hint = 'will include flare information'
         Caption = 'view data at Stanford website'
         TabOrder = 8
@@ -340,6 +348,35 @@ object Form1: TForm1
         TabOrder = 1
         OnClick = Button6Click
       end
+      object GroupBox2: TGroupBox
+        Left = 456
+        Top = 560
+        Width = 385
+        Height = 73
+        Caption = 'Report file naming'
+        TabOrder = 2
+        object reportByMonth: TRadioButton
+          Left = 24
+          Top = 32
+          Width = 113
+          Height = 17
+          Hint = 'report file will by month, all stations combined'
+          Caption = 'by month'
+          TabOrder = 0
+          OnClick = reportByMonthClick
+        end
+        object reportBymonthandstation: TRadioButton
+          Left = 184
+          Top = 32
+          Width = 201
+          Height = 17
+          Caption = 'by month & station'
+          Checked = True
+          TabOrder = 1
+          TabStop = True
+          OnClick = reportByMonthClick
+        end
+      end
     end
     object bufferTab: TTabSheet
       Caption = 'Buffer'
@@ -379,6 +416,15 @@ object Form1: TForm1
         TabOrder = 2
         Visible = False
       end
+      object Button7: TButton
+        Left = 600
+        Top = 536
+        Width = 75
+        Height = 25
+        Caption = 'Button7'
+        TabOrder = 3
+        OnClick = Button7Click
+      end
     end
     object helpTab: TTabSheet
       Caption = 'Help'
@@ -387,7 +433,7 @@ object Form1: TForm1
         Left = 24
         Top = 16
         Width = 921
-        Height = 561
+        Height = 609
         Lines.Strings = (
           ''
           
@@ -404,6 +450,25 @@ object Form1: TForm1
           
             'First step is to set your observer id and the directory of the r' +
             'eport files.'
+          ''
+          
+            'Second, decide how you want to report your data: By month with a' +
+            'll the stations reported in one DAT '
+          
+            'file or with stations in a separate file, by month and station. ' +
+            'There is a check box on the Report tab '
+          
+            'to set this. The later method is common, but keep in mind that y' +
+            'ou can only send in three DAT files to '
+          
+            'the AAVSO at the end of the month, so you will be limited to rep' +
+            'orting on three stations. If you report '
+          
+            'by month, putting all your stations in one DAT file, then you ca' +
+            'n report on more stations. Keep in mind '
+          
+            'that you get "credit" by the number DAT files you send in, so yo' +
+            'u decide.'
           ''
           
             'From there you select a batch of observation files. These files ' +
@@ -431,17 +496,20 @@ object Form1: TForm1
             'looking at your data on the Stanford website at the same time as' +
             ' there it will show you the graphed '
           
-            'data as well as indication of known events. With the zoom you wi' +
-            'll then have the resolution to '
+            'data as well as indication of known events. There'#39's a button bel' +
+            'ow the graph that will take you to '
           
-            'accurately pick the time to the minute by clicking on the graph.' +
-            ' After clicking on start, max and end '
+            'your data on the Stanford website. With the zoom you will then h' +
+            'ave the resolution to accurately pick '
           
-            'review the importance computed and set the definiteness field. Y' +
-            'ou can add D, E and U modifiers to '
+            'the time to the minute by clicking on the graph. After clicking ' +
+            'on start, max and end, review the '
           
-            'the edit boxes as appropriate. Now you can click the "add to rep' +
-            'ort" button. '
+            'importance computed and set the definiteness field. You can add ' +
+            'D, E and U modifiers to the edit '
+          
+            'boxes as appropriate. Now you can click the "add to report" butt' +
+            'on. '
           ''
           
             'When you click on the graph the time will be put in the edit box' +
@@ -451,15 +519,14 @@ object Form1: TForm1
             'st reclick the radio icon so that your '
           'graph click will go to the right place.'
           ''
+          'Report files are named <observer ID>_<year><mo>.DAT or '
           
-            'Report files are named <observer ID><year><mo>.txt. The appropri' +
-            'ate report file is opened based '
+            '<observerID>_<Station>_<year><mo>.DAT. The appropriate report fi' +
+            'le is opened based on the log '
           
-            'on the log file graph you are using. You can edit the file direc' +
-            'tly from the Report tab (eg, to remove a '
-          
-            'record) and then you need to save the updated report with your e' +
-            'dits.'
+            'file graph you are using. You can edit the file directly from th' +
+            'e Report tab (eg, to remove a record) '
+          'and then you need to save the updated report with your edits.'
           ''
           
             'The Next/Prev File buttons take you through the list of files yo' +
@@ -653,8 +720,8 @@ object Form1: TForm1
     DesignFormHeight = 741
     DesignFormClientWidth = 971
     DesignFormClientHeight = 683
-    DesignFormLeft = 420
-    DesignFormTop = 104
+    DesignFormLeft = 325
+    DesignFormTop = 119
     Font.Charset = ANSI_CHARSET
     Font.Color = clWindowText
     Font.Height = -20
@@ -689,6 +756,8 @@ object Form1: TForm1
     BandwidthLimit = 10000
     BandwidthSampling = 1000
     Options = []
+    OnDocBegin = HttpCli1DocBegin
+    OnDocEnd = HttpCli1DocEnd
     SocksAuthentication = socksNoAuthentication
     Left = 196
     Top = 531

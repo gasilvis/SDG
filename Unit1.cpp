@@ -12,8 +12,8 @@
 #pragma package(smart_init)
 #pragma link "ElastFrm"
 #pragma link "HttpProt"
-#pragma link "IcsLogger"
-#pragma link "SHDocVw_OCX"
+//#pragma link "IcsLogger"
+//#pragma link "SHDocVw_OCX"
 #pragma resource "*.dfm"
 TForm1 *Form1;
 //---------------------------------------------------------------------------
@@ -23,15 +23,50 @@ __fastcall TForm1::TForm1(TComponent* Owner)
 }
 //---------------------------------------------------------------------------
 
-#define Version 1.04
+#define Version 1.05
+// when you change this, update gasilvis.com/SID/SIDlog.php which shoule return this value
 AnsiString dataDir, reportDir, reportFile, reportPath, lastFile; // Path is the combination of Dir and File
 
 AnsiString INIfilename= "";
 void __fastcall TForm1::FormCreate(TObject *Sender)
 {
+   TStream *DataIn;
+   char cp[10000];
+   float cver;
+   AnsiString s;
    //TScreen->MenuFont=       ??  trying to set menufont. can't do
    // set window header
    Form1->Caption= "SID Data Grabber Application, "+ FormatFloat("version 0.00", Version);
+   // get current version information
+
+//   HttpCli1->URL        = "github.com/gasilvis/SDG/raw/master/version.txt";
+   HttpCli1->URL        = "http://www.gasilvis.com/SID/SIDlog.php"; // returns currentVersion
+//   HttpCli1->URL= "http://www.aavso.org/cgi-bin/vsp.pl?chartid=11331ABQ&delimited=yes";
+   HttpCli1->RcvdStream = NULL;
+   try {
+      HttpCli1->Get();
+      //Form1->Memo4->Lines->Add("StatusCode = " + IntToStr(Form1->HttpCli1->StatusCode));
+      //for (I = 0; I < Form1->HttpCli1->RcvdHeader->Count; I++)
+      //   Form1->Memo4->Lines->Add("hdr>" + Form1->HttpCli1->RcvdHeader->Strings[I]);
+      DataIn = new TFileStream(Form1->HttpCli1->DocName, fmOpenRead);
+      //Memo4->Lines->LoadFromStream(DataIn);
+      DataIn->ReadBuffer(cp, min(10000, DataIn->Size));
+      delete DataIn;
+      sscanf(cp, "%f", &cver);
+      if(cver > Version) {
+         versionLabel->Tag= 1;
+         versionLabel->Font->Color= clBlue;
+         versionLabel->Caption= s.sprintf("Click here to download version %s", cp);
+      } else {
+         versionLabel->Caption= s.sprintf("%s is the latest version of SDG", cp);
+      }
+   } __except (TRUE) {
+      Form1->Memo4->Lines->Add("GET Failed !");
+      Form1->Memo4->Lines->Add("StatusCode   = " + IntToStr(Form1->HttpCli1->StatusCode));
+      Form1->Memo4->Lines->Add("ReasonPhrase = " + Form1->HttpCli1->ReasonPhrase);
+      //return 0;
+   }
+
    // collect INI file entries
    TIniFile *ini;
    if(0==INIfilename.Length()) { // first time
@@ -47,6 +82,7 @@ void __fastcall TForm1::FormCreate(TObject *Sender)
    observerEdit->Text= ini->ReadString("Setup", "Observer", "");
    Label4->Caption= reportDir= ini->ReadString("Setup", "reportDir", "");
    reportFile= ini->ReadString("Setup", "reportFile", "None");
+   reportByMonth->Checked= ini->ReadBool("Setup", "reportByMonth", false);
    lastFile= ini->ReadString("Setup", "lastFile", "");
    lastFileLabel->Caption= lastFile;
    openReportFile(Sender, false);
@@ -149,7 +185,11 @@ void __fastcall TForm1::displayNextFile(TObject *Sender)
        dataFile= "";
        ShowMessage("Data file does not include station or frequency");
     } else {
-       reportFile= observerEdit->Text+ sb.sprintf("_%04d%02d", yr, mo)+ ".txt";
+       if(reportByMonth->Checked) {
+          reportFile= observerEdit->Text+ sb.sprintf("_%04d%02d", yr, mo)+ ".DAT";
+       } else {
+          reportFile= observerEdit->Text+ sb.sprintf("_%s_%04d%02d", StationID, yr, mo)+ ".DAT";
+       }
        openReportFile(Sender, true);
     }
 /*   problem with arrow chart..
@@ -159,7 +199,7 @@ void __fastcall TForm1::displayNextFile(TObject *Sender)
     Chart1->Series[1]->AddXY(.6, 100000, "", clTeeColor);
     Chart1->Series[1]->AddXY(.8, 100000, "", clTeeColor);
     Chart1->Series[1]->AddXY(.9, 100000, "", clTeeColor);
-*/    
+*/
 }
 //---------------------------------------------------------------------------
 
@@ -386,7 +426,7 @@ void __fastcall TForm1::logMsg(TObject *Sender, AnsiString msg)
       }
    */
 }
-/*
+
 void __fastcall TForm1::HttpCli1DocBegin(TObject *Sender)
 {
     //Memo4->Lines->Add(HttpCli1->ContentType + " => " + HttpCli1->DocName);
@@ -402,7 +442,6 @@ void __fastcall TForm1::HttpCli1DocEnd(TObject *Sender)
     }
 }
 //---------------------------------------------------------------------------
-*/
 
 void __fastcall TForm1::ProcessBufferFileButtonClick(TObject *Sender)
 {
@@ -547,6 +586,55 @@ void __fastcall TForm1::Button4Click(TObject *Sender)
 //   s+= "&monitor=9130$MASH$HWU&monitor=9130$MASH$NAA&monitor=9130$MASH$NLK&monitor=9130$MASH$NML&monitor=9130$MASH$NPM";
    s+= a.sprintf("&date=%i-%02i-%02iT00.00.00", yr, mo, day);
    ShellExecute(Handle,"open",s.c_str(),0,0,SW_SHOW);
+}
+//---------------------------------------------------------------------------
+
+// test function
+void __fastcall TForm1::Button7Click(TObject *Sender)
+{
+    int     I;
+    TStream *DataIn;
+
+    HttpCli1->URL        = "http://www.aavso.org/cgi-bin/vsp.pl?chartid=11331ABQ&delimited=yes";
+    HttpCli1->Proxy      = "";//ProxyHostEdit->Text;
+    HttpCli1->ProxyPort  = "";//ProxyPortEdit->Text;
+    HttpCli1->RcvdStream = NULL;
+    try {
+        HttpCli1->Get   ();
+    } __except (TRUE) {
+        Memo4->Lines->Add("GET Failed !");
+        Memo4->Lines->Add("StatusCode   = " + IntToStr(HttpCli1->StatusCode));
+        Memo4->Lines->Add("ReasonPhrase = " + HttpCli1->ReasonPhrase);
+        return;
+    }
+
+    Memo4->Lines->Add("StatusCode = " + IntToStr(HttpCli1->StatusCode));
+
+    for (I = 0; I < HttpCli1->RcvdHeader->Count; I++)
+        Memo4->Lines->Add("hdr>" + HttpCli1->RcvdHeader->Strings[I]);
+
+    DataIn = new TFileStream(HttpCli1->DocName, fmOpenRead);
+    Memo4->Lines->LoadFromStream(DataIn);
+    delete DataIn;
+
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TForm1::versionLabelClick(TObject *Sender)
+{
+    if(versionLabel->Tag) {
+       ShellExecute(Handle,"open", "https://github.com/gasilvis/SDG/raw/master/SidDataGrabber.exe",0,0,SW_SHOW);
+//       ShellExecute(Handle,"open", "http://www.gasilvis.com/SID/SidDataGrabber.exe",0,0,SW_SHOW);
+    }
+}
+//---------------------------------------------------------------------------
+
+
+void __fastcall TForm1::reportByMonthClick(TObject *Sender)
+{
+      TIniFile *ini= new TIniFile(INIfilename);
+      ini->WriteBool("Setup", "reportByMonth", reportByMonth->Checked);
+      delete ini;
 }
 //---------------------------------------------------------------------------
 

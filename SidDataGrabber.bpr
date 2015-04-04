@@ -25,7 +25,7 @@
     <USERDEFINES value="_DEBUG"/>
     <SYSDEFINES value="NO_STRICT"/>
     <MAINSOURCE value="SidDataGrabber.cpp"/>
-    <INCLUDEPATH value="&quot;C:\Program Files (x86)\Borland\CBuilder5\Bin\&quot;;&quot;C:\Program Files (x86)\Borland\CBuilder5\&quot;;&quot;$(BCB)\Abakus VCL\CB5&quot;;&quot;C:\Program Files (x86)\Borland\CBuilder5\IT4Comm\&quot;;$(BCB)\apro;$(BCB)\include;$(BCB)\include\vcl;$(BCB)\Source\Abakus\CB5;&quot;C:\Program Files (x86)\Borland\CBuilder5\ICS3\Delphi\Vc32\&quot;"/>
+    <INCLUDEPATH value="&quot;C:\Program Files (x86)\Borland\CBuilder5\Bin\&quot;;&quot;C:\Program Files (x86)\Borland\CBuilder5\&quot;;&quot;$(BCB)\Abakus VCL\CB5&quot;;&quot;C:\Program Files (x86)\Borland\CBuilder5\IT4Comm\&quot;;$(BCB)\apro;$(BCB)\include;$(BCB)\include\vcl;$(BCB)\Source\Abakus\CB5;$(BCB)\ICS\Delphi\Vc32"/>
     <LIBPATH value="&quot;C:\Program Files (x86)\Borland\CBuilder5\Bin\&quot;;&quot;C:\Program Files (x86)\Borland\CBuilder5\&quot;;&quot;$(BCB)\Abakus VCL\CB5&quot;;&quot;C:\Program Files (x86)\Borland\CBuilder5\IT4Comm\&quot;;$(BCB)\Projects\Lib;$(BCB)\APRO;$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\Source\Abakus\CB5"/>
     <WARNINGS value="-w-par"/>
   </MACROS>
@@ -71,15 +71,18 @@ ProductVersion=1.0.0.0
 Comments=
 
 [HistoryLists\hlIncludePath]
-Count=8
-Item0=C:\Program Files (x86)\Borland\CBuilder5\Bin\;C:\Program Files (x86)\Borland\CBuilder5\;$(BCB)\Abakus VCL\CB5;C:\Program Files (x86)\Borland\CBuilder5\IT4Comm\;$(BCB)\apro;$(BCB)\include;$(BCB)\include\vcl;$(BCB)\Source\Abakus\CB5;C:\Program Files (x86)\Borland\CBuilder5\ICS3\Delphi\Vc32\
-Item1=C:\Program Files (x86)\Borland\CBuilder5\Bin;C:\Program Files (x86)\Borland\CBuilder5\;$(BCB)\Abakus VCL\CB5;C:\Program Files (x86)\Borland\CBuilder5\IT4Comm\;$(BCB)\apro;$(BCB)\include;$(BCB)\include\vcl;$(BCB)\Source\Abakus\CB5;C:\Program Files (x86)\Borland\CBuilder5\ICS3\Delphi\Vc32
-Item2=C:\Program Files (x86)\Borland\CBuilder5\Bin;C:\Program Files (x86)\Borland\CBuilder5\;$(BCB)\Abakus VCL\CB5;C:\Program Files (x86)\Borland\CBuilder5\IT4Comm\;$(BCB)\apro;$(BCB)\include;$(BCB)\include\vcl;$(BCB)\Source\Abakus\CB5
-Item3=..;$(BCB)\Abakus VCL\CB5;..\IT4Comm;$(BCB)\apro;$(BCB)\include;$(BCB)\include\vcl;$(BCB)\Source\Abakus\CB5
-Item4=..\;$(BCB)\Abakus VCL\CB5;..\IT4Comm;$(BCB)\apro;$(BCB)\include;$(BCB)\include\vcl;$(BCB)\Source\Abakus\CB5
-Item5=$(BCB)\Abakus VCL\CB5;..\IT4Comm;$(BCB)\apro;$(BCB)\include;$(BCB)\include\vcl;$(BCB)\Source\Abakus\CB5
-Item6=$(BCB)\apro;$(BCB)\include;$(BCB)\include\vcl;$(BCB)\source\abakus\cb5
-Item7=$(BCB)\apro;$(BCB)\include;$(BCB)\include\vcl
+Count=11
+Item0=C:\Program Files (x86)\Borland\CBuilder5\Bin\;C:\Program Files (x86)\Borland\CBuilder5\;$(BCB)\Abakus VCL\CB5;C:\Program Files (x86)\Borland\CBuilder5\IT4Comm\;$(BCB)\apro;$(BCB)\include;$(BCB)\include\vcl;$(BCB)\Source\Abakus\CB5;$(BCB)\ICS\Delphi\Vc32
+Item1=C:\Program Files (x86)\Borland\CBuilder5\Bin\;C:\Program Files (x86)\Borland\CBuilder5\;$(BCB)\Abakus VCL\CB5;C:\Program Files (x86)\Borland\CBuilder5\IT4Comm\;$(BCB)\apro;$(BCB)\include;$(BCB)\include\vcl;$(BCB)\Source\Abakus\CB5;$(BCB)\ICS\Delphi\Vc32\
+Item2=C:\Program Files (x86)\Borland\CBuilder5\Bin\;C:\Program Files (x86)\Borland\CBuilder5\;$(BCB)\Abakus VCL\CB5;C:\Program Files (x86)\Borland\CBuilder5\IT4Comm\;$(BCB)\apro;$(BCB)\include;$(BCB)\include\vcl;$(BCB)\Source\Abakus\CB5;C:\Program Files (x86)\Borland\CBuilder5\ICS3\Delphi\Vc32\
+Item3=C:\Program Files (x86)\Borland\CBuilder5\Bin\;C:\Program Files (x86)\Borland\CBuilder5\;$(BCB)\Abakus VCL\CB5;C:\Program Files (x86)\Borland\CBuilder5\IT4Comm\;$(BCB)\apro;$(BCB)\include;$(BCB)\include\vcl;$(BCB)\Source\Abakus\CB5;C:\Program Files (x86)\Borland\CBuilder5\ICS\Delphi\Vc32\
+Item4=C:\Program Files (x86)\Borland\CBuilder5\Bin;C:\Program Files (x86)\Borland\CBuilder5\;$(BCB)\Abakus VCL\CB5;C:\Program Files (x86)\Borland\CBuilder5\IT4Comm\;$(BCB)\apro;$(BCB)\include;$(BCB)\include\vcl;$(BCB)\Source\Abakus\CB5;C:\Program Files (x86)\Borland\CBuilder5\ICS3\Delphi\Vc32
+Item5=C:\Program Files (x86)\Borland\CBuilder5\Bin;C:\Program Files (x86)\Borland\CBuilder5\;$(BCB)\Abakus VCL\CB5;C:\Program Files (x86)\Borland\CBuilder5\IT4Comm\;$(BCB)\apro;$(BCB)\include;$(BCB)\include\vcl;$(BCB)\Source\Abakus\CB5
+Item6=..;$(BCB)\Abakus VCL\CB5;..\IT4Comm;$(BCB)\apro;$(BCB)\include;$(BCB)\include\vcl;$(BCB)\Source\Abakus\CB5
+Item7=..\;$(BCB)\Abakus VCL\CB5;..\IT4Comm;$(BCB)\apro;$(BCB)\include;$(BCB)\include\vcl;$(BCB)\Source\Abakus\CB5
+Item8=$(BCB)\Abakus VCL\CB5;..\IT4Comm;$(BCB)\apro;$(BCB)\include;$(BCB)\include\vcl;$(BCB)\Source\Abakus\CB5
+Item9=$(BCB)\apro;$(BCB)\include;$(BCB)\include\vcl;$(BCB)\source\abakus\cb5
+Item10=$(BCB)\apro;$(BCB)\include;$(BCB)\include\vcl
 
 [HistoryLists\hlLibraryPath]
 Count=7

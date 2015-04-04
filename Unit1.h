@@ -25,6 +25,7 @@
 #include <NMURL.hpp>
 //#include "SHDocVw_OCX.h"
 #include <ArrowCha.hpp>
+//#include <IcsLogger.hpp>
 
 //---------------------------------------------------------------------------
 class TForm1 : public TForm
@@ -79,6 +80,11 @@ __published:	// IDE-managed Components
    THttpCli *HttpCli1;
    TNMURL *NMURL1;
    TButton *Button4;
+   TLabel *versionLabel;
+   TButton *Button7;
+   TGroupBox *GroupBox2;
+   TRadioButton *reportByMonth;
+   TRadioButton *reportBymonthandstation;
    void __fastcall Open1Click(TObject *Sender);
    void __fastcall Quit1Click(TObject *Sender);
    void __fastcall FormCreate(TObject *Sender);
@@ -94,10 +100,11 @@ __published:	// IDE-managed Components
    void __fastcall Button6Click(TObject *Sender);
    void __fastcall ProcessBufferFileButtonClick(TObject *Sender);
    void __fastcall Button4Click(TObject *Sender);
-
-
-//   void __fastcall HttpCli1DocBegin(TObject *Sender);
-//   void __fastcall HttpCli1DocEnd(TObject *Sender);
+   void __fastcall HttpCli1DocBegin(TObject *Sender);
+   void __fastcall HttpCli1DocEnd(TObject *Sender);
+   void __fastcall Button7Click(TObject *Sender);
+   void __fastcall versionLabelClick(TObject *Sender);
+   void __fastcall reportByMonthClick(TObject *Sender);
 private:	// User declarations
 
 public:		// User declarations
