@@ -85,6 +85,11 @@ __published:	// IDE-managed Components
    TGroupBox *GroupBox2;
    TRadioButton *reportByMonth;
    TRadioButton *reportBymonthandstation;
+   TMenuItem *SetLogtype1;
+   TMenuItem *LogTypeSuperSID;
+   TMenuItem *LogTypeLASPextract;
+   TEdit *stationEdit;
+   TEdit *freqEdit;
    void __fastcall Open1Click(TObject *Sender);
    void __fastcall Quit1Click(TObject *Sender);
    void __fastcall FormCreate(TObject *Sender);
@@ -105,6 +110,9 @@ __published:	// IDE-managed Components
    void __fastcall Button7Click(TObject *Sender);
    void __fastcall versionLabelClick(TObject *Sender);
    void __fastcall reportByMonthClick(TObject *Sender);
+   void __fastcall LogTypeSuperSIDClick(TObject *Sender);
+   void __fastcall stationEditExit(TObject *Sender);
+   void __fastcall freqEditExit(TObject *Sender);
 private:	// User declarations
 
 public:		// User declarations

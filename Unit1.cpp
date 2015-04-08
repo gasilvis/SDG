@@ -23,9 +23,13 @@ __fastcall TForm1::TForm1(TComponent* Owner)
 }
 //---------------------------------------------------------------------------
 
-#define Version 1.05
+#define Version 1.06
 // when you change this, update gasilvis.com/SID/SIDlog.php which shoule return this value
 AnsiString dataDir, reportDir, reportFile, reportPath, lastFile; // Path is the combination of Dir and File
+#define LogTypesNum  10
+TMenuItem *LogTypes[LogTypesNum]; //= { LogTypeSuperSID, LogTypeLASPextract etc   set at create time};
+
+AnsiString Site, StationID= "   ", Frequency= "0";
 
 AnsiString INIfilename= "";
 void __fastcall TForm1::FormCreate(TObject *Sender)
@@ -34,14 +38,13 @@ void __fastcall TForm1::FormCreate(TObject *Sender)
    char cp[10000];
    float cver;
    AnsiString s;
+   int lt, i;
    //TScreen->MenuFont=       ??  trying to set menufont. can't do
    // set window header
    Form1->Caption= "SID Data Grabber Application, "+ FormatFloat("version 0.00", Version);
-   // get current version information
 
-//   HttpCli1->URL        = "github.com/gasilvis/SDG/raw/master/version.txt";
+   // get current version information
    HttpCli1->URL        = "http://www.gasilvis.com/SID/SIDlog.php"; // returns currentVersion
-//   HttpCli1->URL= "http://www.aavso.org/cgi-bin/vsp.pl?chartid=11331ABQ&delimited=yes";
    HttpCli1->RcvdStream = NULL;
    try {
       HttpCli1->Get();
@@ -67,6 +70,10 @@ void __fastcall TForm1::FormCreate(TObject *Sender)
       //return 0;
    }
 
+   // build LogType array
+   LogTypes[0]= LogTypeSuperSID;
+   LogTypes[1]= LogTypeLASPextract;
+
    // collect INI file entries
    TIniFile *ini;
    if(0==INIfilename.Length()) { // first time
@@ -86,11 +93,15 @@ void __fastcall TForm1::FormCreate(TObject *Sender)
    lastFile= ini->ReadString("Setup", "lastFile", "");
    lastFileLabel->Caption= lastFile;
    openReportFile(Sender, false);
+   lt= ini->ReadInteger("Setup", "LogType", 0); // default to SuperSid
+   LogTypes[lt]->Checked= true;
+   freqEdit->Text= Frequency= ini->ReadString("Setup", "lastFrequency", 0);
+   stationEdit->Text= StationID= ini->ReadString("Setup", "lastStation", "   ");
    delete ini;
 
 }
 //---------------------------------------------------------------------------
-AnsiString dataFile;   
+AnsiString dataFile;
 TStrings *dataFiles= new TStringList;
 int filesIndex= -1;
 
@@ -123,7 +134,6 @@ void __fastcall TForm1::Quit1Click(TObject *Sender)
     Close();
 }
 //---------------------------------------------------------------------------
-AnsiString Site, StationID, Frequency;
 int SampleRate= 0, sidMonitor= 0;
 int startMin, endMin, maxMin, yr, mo, day;
 
@@ -155,11 +165,13 @@ void __fastcall TForm1::displayNextFile(TObject *Sender)
            sb= AnsiString(buf).TrimRight(); // cut the \n
            if(sb.SubString(2, 13)== " StationID = ") {
               StationID= sb.SubString(15, 20).TrimRight().TrimLeft();
-              stationLabel->Caption= "Station:  "+StationID;
+              stationEdit->Text= StationID;
+              stationEditExit(Sender);
            } else if(sb.SubString(2, 13)== " Frequency = ") {
               Frequency= sb.SubString(15, 20).TrimRight().TrimLeft();
               //Frequency= sb.sprintf("%g", y); // g fmt loses the trailing 0's
-              freqLabel->Caption= "Freq:  "+ Frequency;
+              freqEdit->Text= Frequency;
+              freqEditExit(Sender);
            } else if(sb.SubString(2, 14)== " SampleRate = ") {
               SampleRate= sb.SubString(16, 20).ToInt();
            } else if(sb.SubString(2, 13)== " MonitorID = ") {
@@ -168,14 +180,30 @@ void __fastcall TForm1::displayNextFile(TObject *Sender)
               Site= sb.SubString(10, 20).TrimRight().TrimLeft();
            }
         } else {
-          //2015-03-01 00:00:10, 50885.6558753    eg
-          x=sscanf(buf, "%04d-%02d-%02d %02d:%02d:%02d, %f\n", &yr, &mo, &day, &hr, &min, &sec, &dp); // %d avoids %i confusion over octal eg 08
-          if(7==x) {
-             time= (hr + (min+ sec/60.0)/60.0)/24.0; // put in days
-             x=Chart1->Series[0]->AddXY(time, dp, "", clTeeColor);
-          } else {
-             ShowMessage("bad data line: "+ AnsiString(buf));
-          }
+           if(LogTypeSuperSID->Checked) {
+              //2015-03-01 00:00:10, 50885.6558753    eg
+              x=sscanf(buf, "%04d-%02d-%02d %02d:%02d:%02d, %f\n", &yr, &mo, &day, &hr, &min, &sec, &dp); // %d avoids %i confusion over octal eg 08
+              if(7==x) {
+                 time= (hr + (min+ sec/60.0)/60.0)/24.0; // put in days
+                 x=Chart1->Series[0]->AddXY(time, dp, "", clTeeColor);
+              } else {
+                 ShowMessage("bad data line: "+ AnsiString(buf));
+                 break;
+              }
+          } else if(LogTypeLASPextract->Checked) {
+              //2015-04-03:0000,7.67e-07   eg
+              x=sscanf(buf, "%04d-%02d-%02d:%04d,%f\n", &yr, &mo, &day, &min, &dp); // %d avoids %i confusion over octal eg 08
+              if(5==x) {
+                 time= min/1440.0; // put in days
+                 x=Chart1->Series[0]->AddXY(time, dp, "", clTeeColor);
+              } else {
+                 ShowMessage("bad data line: "+ AnsiString(buf));
+                 break;
+              }
+           }
+
+
+
        }
     }
     Chart1->UndoZoom();
@@ -635,6 +663,52 @@ void __fastcall TForm1::reportByMonthClick(TObject *Sender)
       TIniFile *ini= new TIniFile(INIfilename);
       ini->WriteBool("Setup", "reportByMonth", reportByMonth->Checked);
       delete ini;
+}
+//---------------------------------------------------------------------------
+
+
+
+void __fastcall TForm1::LogTypeSuperSIDClick(TObject *Sender)
+{
+   // click a log file option
+   TMenuItem *p;
+   if((p=dynamic_cast<TMenuItem*>(Sender))==NULL)
+      return;
+   p->Checked= true;
+   // update ini
+   for(int i= 0; i< LogTypesNum; i++) {
+      if(p==LogTypes[i]) {
+         TIniFile *ini= new TIniFile(INIfilename);
+         ini->WriteInteger("Setup", "LogType", i);
+         delete ini;
+         break;
+      }
+   }
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TForm1::stationEditExit(TObject *Sender)
+{
+   // set StationID and INI
+   StationID= (stationEdit->Text.TrimLeft().TrimRight()+ "   ").SubString(1, 3);
+   stationEdit->Text= StationID;
+   TIniFile *ini= new TIniFile(INIfilename);
+   ini->WriteString("Setup", "lastStation", StationID);
+   delete ini;
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TForm1::freqEditExit(TObject *Sender)
+{
+   int freq= 0;
+   // set Frequency and INI
+   Frequency= freqEdit->Text.TrimLeft().TrimRight();
+   try { freq= Frequency.ToInt();}
+   catch (...) { Frequency= "0"; }
+   freqEdit->Text= freq;
+   TIniFile *ini= new TIniFile(INIfilename);
+   ini->WriteString("Setup", "lastFrequency", Frequency);
+   delete ini;
 }
 //---------------------------------------------------------------------------
 

@@ -1,6 +1,6 @@
 object Form1: TForm1
-  Left = 325
-  Top = 119
+  Left = 337
+  Top = 162
   Width = 979
   Height = 741
   HorzScrollBar.Visible = False
@@ -34,16 +34,16 @@ object Form1: TForm1
       object stationLabel: TLabel
         Left = 32
         Top = 192
-        Width = 61
+        Width = 67
         Height = 23
-        Caption = 'Station'
+        Caption = 'Station:'
       end
       object freqLabel: TLabel
         Left = 240
         Top = 192
-        Width = 41
+        Width = 47
         Height = 23
-        Caption = 'Freq'
+        Caption = 'Freq:'
       end
       object Label3: TLabel
         Left = 32
@@ -313,6 +313,25 @@ object Form1: TForm1
         TabOrder = 8
         OnClick = Button4Click
       end
+      object stationEdit: TEdit
+        Left = 112
+        Top = 190
+        Width = 81
+        Height = 31
+        Hint = '3 letter station code'
+        TabOrder = 9
+        OnExit = stationEditExit
+      end
+      object freqEdit: TEdit
+        Left = 296
+        Top = 190
+        Width = 81
+        Height = 31
+        Hint = 'Hz'
+        TabOrder = 10
+        Text = '0'
+        OnExit = freqEditExit
+      end
     end
     object reportTab: TTabSheet
       Caption = 'Report'
@@ -351,7 +370,7 @@ object Form1: TForm1
       object GroupBox2: TGroupBox
         Left = 456
         Top = 560
-        Width = 385
+        Width = 409
         Height = 73
         Caption = 'Report file naming'
         TabOrder = 2
@@ -368,9 +387,9 @@ object Form1: TForm1
         object reportBymonthandstation: TRadioButton
           Left = 184
           Top = 32
-          Width = 201
+          Width = 217
           Height = 17
-          Caption = 'by month & station'
+          Caption = 'by month and station'
           Checked = True
           TabOrder = 1
           TabStop = True
@@ -471,11 +490,12 @@ object Form1: TForm1
             'u decide.'
           ''
           
-            'From there you select a batch of observation files. These files ' +
-            'need to be in the SuperSID format (txt '
+            'From there you select a batch of observation files. First select' +
+            ' the log file type in the File/Set Log '
           
-            'or csv) with header information and the timeseries data spanning' +
-            ' one day. For example:'
+            'type menu. The SuperSID format (txt or csv) contains header info' +
+            'rmation and the timeseries data '
+          'spanning one day. For example:'
           '# StationID = HWU'
           '# Frequency = 18300'
           '2015-03-01 00:00:00, 50885.6558753'
@@ -487,7 +507,8 @@ object Form1: TForm1
             'ta, contact me and I'#39'll see about '
           
             'making modifications to the application for you. A141@GASilvis.n' +
-            'et.'
+            'et. You'#39'll see that one other format '
+          'is available now.'
           ''
           
             'If you see a flare event in the graph, zoom in on it by drawing ' +
@@ -696,15 +717,34 @@ object Form1: TForm1
     Top = 312
   end
   object MainMenu1: TMainMenu
-    OwnerDraw = True
-    Left = 160
-    Top = 344
+    Left = 16
+    Top = 40
     object File1: TMenuItem
       Caption = 'File'
       object Open1: TMenuItem
         Caption = 'Open'
         Hint = 'Select a SID daily output file'
         OnClick = Open1Click
+      end
+      object SetLogtype1: TMenuItem
+        Caption = 'Set Log type  '
+        object LogTypeSuperSID: TMenuItem
+          AutoLineReduction = maAutomatic
+          Caption = 'Super SID   '
+          Checked = True
+          GroupIndex = 12
+          Hint = 'eg. 2015-03-01 00:00:10, 50885.6558753'
+          RadioItem = True
+          OnClick = LogTypeSuperSIDClick
+        end
+        object LogTypeLASPextract: TMenuItem
+          AutoLineReduction = maAutomatic
+          Caption = 'LASP extract'
+          GroupIndex = 12
+          Hint = 'eg. 2015-04-03:0000,7.67e-07'
+          RadioItem = True
+          OnClick = LogTypeSuperSIDClick
+        end
       end
       object Quit1: TMenuItem
         Caption = 'Quit'
@@ -720,8 +760,8 @@ object Form1: TForm1
     DesignFormHeight = 741
     DesignFormClientWidth = 971
     DesignFormClientHeight = 683
-    DesignFormLeft = 325
-    DesignFormTop = 119
+    DesignFormLeft = 337
+    DesignFormTop = 162
     Font.Charset = ANSI_CHARSET
     Font.Color = clWindowText
     Font.Height = -20
