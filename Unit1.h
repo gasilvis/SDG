@@ -25,6 +25,8 @@
 #include <NMURL.hpp>
 //#include "SHDocVw_OCX.h"
 #include <ArrowCha.hpp>
+#include "FtpCli.hpp"
+#include "WSocket.hpp"
 //#include <IcsLogger.hpp>
 
 //---------------------------------------------------------------------------
@@ -76,9 +78,7 @@ __published:	// IDE-managed Components
    TLabel *lastFileLabel;
    TMemo *Memo3;
    TMemo *Memo4;
-   TNMHTTP *NMHTTP1;
    THttpCli *HttpCli1;
-   TNMURL *NMURL1;
    TButton *Button4;
    TLabel *versionLabel;
    TButton *Button7;
@@ -90,6 +90,10 @@ __published:	// IDE-managed Components
    TMenuItem *LogTypeLASPextract;
    TEdit *stationEdit;
    TEdit *freqEdit;
+   TLabel *testLabel;
+   TArrowSeries *Series2;
+   TFtpClient *FtpClient1;
+   TArrowSeries *Series3;
    void __fastcall Open1Click(TObject *Sender);
    void __fastcall Quit1Click(TObject *Sender);
    void __fastcall FormCreate(TObject *Sender);
@@ -122,6 +126,8 @@ public:		// User declarations
    void __fastcall TForm1::logMsg(TObject *Sender, AnsiString msg);
    bool __fastcall TForm1::IsSafeChar(int ch);
    AnsiString __fastcall TForm1::EncodeURIComponent(AnsiString ASrc);
+   bool __fastcall TForm1::httpGet(AnsiString URL, char* buffer, int bufsize);
+   short __fastcall TForm1::getFlareData(int yr, int mo, int day);
 };
 //---------------------------------------------------------------------------
 extern PACKAGE TForm1 *Form1;

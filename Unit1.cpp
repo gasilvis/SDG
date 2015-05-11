@@ -1,4 +1,4 @@
-//---------------------------------------------------------------------------
+   //---------------------------------------------------------------------------
 
 #include <vcl.h>
 #pragma hdrstop
@@ -14,8 +14,68 @@
 #pragma link "HttpProt"
 //#pragma link "IcsLogger"
 //#pragma link "SHDocVw_OCX"
+#pragma link "FtpCli"
+#pragma link "WSocket"
 #pragma resource "*.dfm"
 TForm1 *Form1;
+
+void computeSunRiseandSet(double latitude, double longitude, short yday, short* sunrise, short* sunset);
+int DayOfYear(int yr, int mo, int day);
+typedef struct {
+   char*  ID;
+   double Lat;
+   double Long;
+   char*  Desc;
+} stationDetail;
+//from http://sidstation.loudet.org/stations-list-en.xhtml   5/5/2015
+stationDetail Stations[]= {
+    {"VTX",  +8.387015,  +77.752762, "16300, 17000, 18200, 19200	South Vijayanarayanam, India"}
+   ,{"JXN", +66.974353,  +13.873617, "16400	Novik, Norway"}
+   ,{"SAQ", +57.113171,  +12.397277, "17200	Grimeton, Sweden"}
+   ,{"GBZ", +54.911643,   -3.278456, "19580	Anthorn, UK"}
+   ,{"NWC",	-21.816328, +114.165586, "19800	Harold E. Holt, North West Cape, Exmouth, Australia"}
+   ,{"ICV", +40.923127,   +9.731011, "20270	Isola di Tavolara, Italy"}
+   ,{"FTA", +48.544632,   +2.579429, "16800 20900	Sainte-Assise, France"}
+   ,{"NPM", +21.420166, -158.151140, "21400	Pearl Harbour, Lualuahei, HI"}
+   ,{"HWU", +46.713129,   +1.245248, "15100 18300 21750 22600	Rosnay, France"}
+   ,{"GQD", +54.731799,   -2.883033, "22100	Skelton, UK"}
+   ,{"NDT", +32.082084, +130.827960, "22200	Ebino, Japan"}
+   ,{"JJI",  32.04, 130.81, "22100, Ebino, Japan"} // defunct?
+   ,{"DHO", +53.078900,   +7.61500038, "23400	Rhauderfehn, Germany  DHO38"}
+   ,{"NAA", +44.644936,  -67.281639, "24000	Cutler, ME"}
+   ,{"NLK", +48.203487, -121.916827, "24800	Oso Wash, Jim Creek, WA"}
+//   ,{"unid25", +34.679068, +126.445383, "25000	Mokpo, South Korea"}
+   ,{"NML", +46.365990,  -98.335638, "25200	La Moure, ND"}
+   ,{"TBB", +37.412725,  +27.323342, "26700	Bafa, Turkey"}
+   ,{"NRK", +63.850365,  -22.466773, "37500	Grindavik, Iceland"}
+   ,{"TFK", +63.850365,  -22.466773, "37500	Grindavik, Iceland"}
+   ,{"JJY", +37.372598, +140.848906, "40000	Mount Ootakadoya, Fukushima prefecture, Japan, JJY-40"}
+   ,{"SRC", +57.113171,  +12.397277, "40400	Varberg, Sweden"}
+   ,{"NAU", +18.398762,  -67.177599, "40800	Aguada, Puerto Rico"}
+   ,{"NSY",	+37.125660,  +14.436416, "45900	Niscemi, Italy"}
+   ,{"SXA", +38.145170,  +24.019709, "49000	Marathon, Greece"}
+   ,{"GYW", +57.617464,   -1.887595, "51950	Crimond, UK,  GYW1"}
+   ,{"MSF", +54.911195,   -3.279302, "60000	Anthorn, UK"}
+   ,{"WWV", +40.677722, -105.047153, "60000	Fort Collins, Colorado,  WWVB"}
+//   ,{"JJY-60", +33.465433, +130.175415, "60000	Mount Hagane, Fukuoka prefecture, Japan"}
+   ,{"FUG", +43.386798,   +2.097388, "62600	La Régine, France"}
+   ,{"FUE", +48.637672,   -4.350725, "65800	Kerlouan, France"}
+   ,{"BPC", +34.456519, +115.836937, "68500	Shangqiu, Henan Province, China"}
+   ,{"CFH", +44.967276,  -63.982160, "73600	Halifax, Canada"}
+   ,{"DCF", +50.015411,   +9.008307, "77500	Mainflingen, Germany,  DCF77"}
+   ,{"GYN", +53.830071,   -2.834266, "81000	Inskip, UK,  GYN2"}
+};
+
+typedef struct {
+   double begin;
+   double end;
+   char  desc[15];
+} flareDetail;
+#define FLAREMAX 20
+flareDetail flares[FLAREMAX];
+short flareCount= 0;
+
+
 //---------------------------------------------------------------------------
 __fastcall TForm1::TForm1(TComponent* Owner)
    : TForm(Owner)
@@ -23,8 +83,16 @@ __fastcall TForm1::TForm1(TComponent* Owner)
 }
 //---------------------------------------------------------------------------
 
-#define Version 1.06
-// when you change this, update gasilvis.com/SID/SIDlog.php which shoule return this value
+#define Version 1.07
+// when you change this, update gasilvis.com/SID/SIDlog.php which should return this value
+/*
+  1.07
+  - tidy up httpget
+  - include quality in Stanford web call
+  - capture siteLat/Long
+  - show sunrise/sunset times of site and station
+  - show known XRay events on the graph
+*/
 AnsiString dataDir, reportDir, reportFile, reportPath, lastFile; // Path is the combination of Dir and File
 #define LogTypesNum  10
 TMenuItem *LogTypes[LogTypesNum]; //= { LogTypeSuperSID, LogTypeLASPextract etc   set at create time};
@@ -44,30 +112,15 @@ void __fastcall TForm1::FormCreate(TObject *Sender)
    Form1->Caption= "SID Data Grabber Application, "+ FormatFloat("version 0.00", Version);
 
    // get current version information
-   HttpCli1->URL        = "http://www.gasilvis.com/SID/SIDlog.php"; // returns currentVersion
-   HttpCli1->RcvdStream = NULL;
-   try {
-      HttpCli1->Get();
-      //Form1->Memo4->Lines->Add("StatusCode = " + IntToStr(Form1->HttpCli1->StatusCode));
-      //for (I = 0; I < Form1->HttpCli1->RcvdHeader->Count; I++)
-      //   Form1->Memo4->Lines->Add("hdr>" + Form1->HttpCli1->RcvdHeader->Strings[I]);
-      DataIn = new TFileStream(Form1->HttpCli1->DocName, fmOpenRead);
-      //Memo4->Lines->LoadFromStream(DataIn);
-      DataIn->ReadBuffer(cp, min(10000, DataIn->Size));
-      delete DataIn;
+   if(httpGet("http://www.gasilvis.com/SID/SIDlog.php", cp, sizeof(cp))) {
       sscanf(cp, "%f", &cver);
-      if(cver > Version) {
+      if(cver > Version+ 0.001) {
          versionLabel->Tag= 1;
          versionLabel->Font->Color= clBlue;
-         versionLabel->Caption= s.sprintf("Click here to download version %s", cp);
+         versionLabel->Caption= s.sprintf("Click here to download version %.2f", cver);
       } else {
-         versionLabel->Caption= s.sprintf("%s is the latest version of SDG", cp);
+         versionLabel->Caption= s.sprintf("%.2f is the latest version of SDG", cver);
       }
-   } __except (TRUE) {
-      Form1->Memo4->Lines->Add("GET Failed !");
-      Form1->Memo4->Lines->Add("StatusCode   = " + IntToStr(Form1->HttpCli1->StatusCode));
-      Form1->Memo4->Lines->Add("ReasonPhrase = " + Form1->HttpCli1->ReasonPhrase);
-      //return 0;
    }
 
    // build LogType array
@@ -136,6 +189,7 @@ void __fastcall TForm1::Quit1Click(TObject *Sender)
 //---------------------------------------------------------------------------
 int SampleRate= 0, sidMonitor= 0;
 int startMin, endMin, maxMin, yr, mo, day;
+double siteLat, siteLong;
 
 void __fastcall TForm1::displayNextFile(TObject *Sender)
 {
@@ -147,8 +201,11 @@ void __fastcall TForm1::displayNextFile(TObject *Sender)
     float dp, time= 0;
     AnsiString sb;
     float y;
+    short siteSR, siteSS, stationSR, stationSS, stationIndex;
 
     Chart1->Series[0]->Clear();
+    Chart1->Series[1]->Clear();
+    Chart1->Series[2]->Clear();
     Chart1->Title->Text->Clear();
     Chart1->Title->Text->Add(dataFile);
     lastFile= dataFile;
@@ -162,8 +219,22 @@ void __fastcall TForm1::displayNextFile(TObject *Sender)
     yr= mo= 0;
     while(fgets(buf, 64, fp)) {
         if(buf[0]=='#') {
+/* eg
+# Site = MASH
+# Longitude = -70.63324
+# Latitude = 41.71686
+#
+# UTC_Offset = -4
+# TimeZone = Eastern Standard time (EST)
+#
+# UTC_StartTime = 2015-03-08 00:00:00
+# StationID = NLK
+# Frequency = 24800
+# MonitorID = 9130
+# SampleRate =  5
+*/
            sb= AnsiString(buf).TrimRight(); // cut the \n
-           if(sb.SubString(2, 13)== " StationID = ") {
+            if(sb.SubString(2, 13)== " StationID = ") {
               StationID= sb.SubString(15, 20).TrimRight().TrimLeft();
               stationEdit->Text= StationID;
               stationEditExit(Sender);
@@ -178,6 +249,10 @@ void __fastcall TForm1::displayNextFile(TObject *Sender)
               sidMonitor= sb.SubString(15, 20).ToInt();
            } else if(sb.SubString(2, 8)== " Site = ") {
               Site= sb.SubString(10, 20).TrimRight().TrimLeft();
+           } else if(sb.SubString(2, 13)== " Longitude = ") {
+              siteLong= sb.SubString(15, 20).ToDouble();
+           } else if(sb.SubString(2, 12)== " Latitude = ") {
+              siteLat= sb.SubString(14, 20).ToDouble();
            }
         } else {
            if(LogTypeSuperSID->Checked) {
@@ -200,12 +275,32 @@ void __fastcall TForm1::displayNextFile(TObject *Sender)
                  ShowMessage("bad data line: "+ AnsiString(buf));
                  break;
               }
-           }
-
-
-
+          }
        }
+    } // end while
+    // get flare data
+    flareCount= getFlareData(yr, mo, day);
+
+    // show station and monitor sunrise/sunset
+    computeSunRiseandSet(siteLat, siteLong, DayOfYear(yr, mo, day), &siteSR, &siteSS);
+    //testLabel->Caption= sb.sprintf("sunrise/set %04d  %04d", siteSunrise, siteSunset);
+    int maxY= Chart1->Series[0]->MaxYValue();
+    dynamic_cast<TArrowSeries*>(Chart1->Series[1])->AddArrow(siteSR/1440.0, 0, siteSR/1440.0, maxY, "site", clTeeColor);
+    dynamic_cast<TArrowSeries*>(Chart1->Series[1])->AddArrow(siteSS/1440.0, maxY, siteSS/1440.0, 0, "site", clTeeColor);
+    for(int i= 0; i<sizeof(Stations)/sizeof(stationDetail); i++)
+       if(0==strcmp(Stations[i].ID, StationID.c_str())) {stationIndex= i; break;}
+    computeSunRiseandSet(Stations[stationIndex].Lat, Stations[stationIndex].Long, DayOfYear(yr, mo, day), &stationSR, &stationSS);
+    dynamic_cast<TArrowSeries*>(Chart1->Series[1])->AddArrow(stationSR/1440.0, 0, stationSR/1440.0, maxY, Stations[stationIndex].ID, clTeeColor);
+    dynamic_cast<TArrowSeries*>(Chart1->Series[1])->AddArrow(stationSS/1440.0, maxY, stationSS/1440.0, 0, Stations[stationIndex].ID, clTeeColor);
+
+    // get flare data
+//    flareCount= getFlareData(yr, mo, day);
+    for(int ii= 0; ii< flareCount; ii++) {
+       dynamic_cast<TArrowSeries*>(Chart1->Series[2])->AddArrow(flares[ii].begin, 0.9*maxY, flares[ii].end, 0.9*maxY, flares[ii].desc, clTeeColor);
     }
+
+
+
     Chart1->UndoZoom();
     fclose(fp);
     //TBD is the file complete? clear dataFile if not
@@ -220,14 +315,6 @@ void __fastcall TForm1::displayNextFile(TObject *Sender)
        }
        openReportFile(Sender, true);
     }
-/*   problem with arrow chart..
-    // add flare information
-    Chart1->Series[1]->Clear();
-    Chart1->Series[1]->AddXY(.3, 100000, "", clTeeColor);
-    Chart1->Series[1]->AddXY(.6, 100000, "", clTeeColor);
-    Chart1->Series[1]->AddXY(.8, 100000, "", clTeeColor);
-    Chart1->Series[1]->AddXY(.9, 100000, "", clTeeColor);
-*/
 }
 //---------------------------------------------------------------------------
 
@@ -426,50 +513,14 @@ void __fastcall TForm1::Button6Click(TObject *Sender)
 void __fastcall TForm1::logMsg(TObject *Sender, AnsiString msg)
 {
       AnsiString s;
-   //   TStream *DataIn; int I;
-   //   char cp[10000];
-
-
       // log the process
       s= "http://www.gasilvis.com/SID/SIDlog.php?logentry=";
       s+= observerEdit->Text;
       s+= ", "+ FormatFloat("0.00", Version);
       s+= ", "+ msg;
-      s= EncodeURIComponent(s);
-      // doesn't work. Encodes too many things. Just need space to %20
-      //NMURL1->InputString= s;
-      //s= NMURL1->Encode;
-      NMHTTP1->Get(s);
-   /*
-      HttpCli1->URL        = s;
-      HttpCli1->RcvdStream = NULL;
-      try {
-         Form1->HttpCli1->Get();
-      } __except (TRUE) {
-             Form1->Memo4->Lines->Add(s);
-             Form1->Memo4->Lines->Add("GET Failed !");
-             Form1->Memo4->Lines->Add("StatusCode   = " + IntToStr(Form1->HttpCli1->StatusCode));
-             Form1->Memo4->Lines->Add("ReasonPhrase = " + Form1->HttpCli1->ReasonPhrase);
-             //return 0;
-      }
-   */
+      httpGet(s, NULL, 0);
 }
 
-void __fastcall TForm1::HttpCli1DocBegin(TObject *Sender)
-{
-    //Memo4->Lines->Add(HttpCli1->ContentType + " => " + HttpCli1->DocName);
-    //Memo4->Lines->Add("Document = " + HttpCli1->DocName);
-    HttpCli1->RcvdStream = new TFileStream(HttpCli1->DocName, fmCreate);
-}
-
-void __fastcall TForm1::HttpCli1DocEnd(TObject *Sender)
-{
-    if (HttpCli1->RcvdStream) {
-        delete HttpCli1->RcvdStream;
-        HttpCli1->RcvdStream = NULL;
-    }
-}
-//---------------------------------------------------------------------------
 
 void __fastcall TForm1::ProcessBufferFileButtonClick(TObject *Sender)
 {
@@ -490,6 +541,8 @@ void __fastcall TForm1::ProcessBufferFileButtonClick(TObject *Sender)
           while(fgets(buf, 255, cbf)) {
              if(buf[0]=='#') { // collect header
                 if     (0==strncmp(buf, "# Site = ", 9)) Site= AnsiString(&buf[9]).TrimRight();
+                else if(0==strncmp(buf, "# Longitude = ", 14)) Long= AnsiString(&buf[14]).TrimRight();
+                else if(0==strncmp(buf, "# Latitude = ", 13)) Lat= AnsiString(&buf[13]).TrimRight();
                 else if(0==strncmp(buf, "# UTC_StartTime = ", 18)) startTime= AnsiString(&buf[18]).TrimRight();
                 else if(0==strncmp(buf, "# LogInterval =  ", 17)) interval= AnsiString(&buf[17]).TrimRight();
                 else if(0==strncmp(buf, "# Stations = ", 13)) {
@@ -517,6 +570,8 @@ void __fastcall TForm1::ProcessBufferFileButtonClick(TObject *Sender)
                       //else {
                       Memo3->Lines->Add("create file: "+ s);
                       fputs(("# Site = "+ Site+ "\r\n").c_str(), df[i]);
+                      fputs(("# Longitude = "+ Long+ "\r\n").c_str(), df[i]);
+                      fputs(("# Latitude = "+ Lat+ "\r\n").c_str(), df[i]);
                       fputs(("# UTC_StartTime = "+ startTime+ "\r\n").c_str(), df[i]);
                       fputs(("# StationID = "+ Stations[i]+ "\r\n").c_str(), df[i]);
                       fputs(("# Frequency = "+ freqs[i]+ "\r\n").c_str(), df[i]);
@@ -548,69 +603,15 @@ void __fastcall TForm1::ProcessBufferFileButtonClick(TObject *Sender)
 //---------------------------------------------------------------------------
 
 
-bool __fastcall TForm1::IsSafeChar(int ch)
-{
-   bool Result;
-   if     (ch >= 48 && ch <= 57) Result= true;    // 0-9
-   else if(ch >= 61 && ch <= 90) Result= true;  // =?>@A-Z
-   else if(ch >= 97 && ch <= 122) Result= true;  // a-z
-   else if(ch == 33) Result= true; // !
-   else if(ch >= 39 && ch <= 42) Result= true; // '()*
-   else if(ch >= 44 && ch <= 46) Result= true; // ,-.
-   else if(ch == 95) Result= true; // _
-   else if(ch == 126) Result= true; // ~
-   else if(ch == 58) Result= true; // :
-   else if(ch == 47) Result= true; // /
-   else Result= false;
-   return Result;
-}
-
-// the only thing needed to be encoded are spaces
-// this code is pretty hacked up
-AnsiString __fastcall TForm1::EncodeURIComponent(AnsiString ASrc)
-{
-   AnsiString UTF8String, HexMap= "0123456789ABCDEF", Result= "", ASrcUTF8;
-   int I= 1, J= 1;
-
-   ASrcUTF8= ASrc; //ASrcUTF8 := UTF8Encode(ASrc);
-   // UTF8Encode call not strictly necessary but
-   // prevents implicit conversion warning
-
-   Result.SetLength(ASrcUTF8.Length() * 3); // space to %xx encode every byte
-   while(I <= ASrcUTF8.Length()) {
-      if(IsSafeChar(ASrcUTF8[I])) {
-         Result[J]= ASrcUTF8[I];
-         J++;
-      }
-/*      else if(ASrcUTF8[I] == ' ') {
-         Result[J]= '+';
-         J++;
-      } */
-      else {
-         Result[J]= '%';
-         Result[J+1]= HexMap[(ASrcUTF8[I] >> 4) + 1];
-         Result[J+2]= HexMap[(ASrcUTF8[I] & 0x0F) + 1];
-         J+= 3;
-      }
-      I++;
-   }
-
-   Result.SetLength(J-1);
-   return Result;
-}
-
 
 
 void __fastcall TForm1::Button4Click(TObject *Sender)
 {
    AnsiString a, s;
    s= "http://sid.stanford.edu/database-browser/browse.jsp?display=vertical";
-   s+= "&goesFlareStrength=C1.0";
+   s+= "&goesFlareStrength=C1.0&quality=true";
    s+= "&timeRange=1440&size=1000x200";
-
    s+= a.sprintf("&monitor=%i$%s$%s", sidMonitor, Site, StationID);
-
-
 //   s+= "&monitor=9130$MASH$HWU&monitor=9130$MASH$NAA&monitor=9130$MASH$NLK&monitor=9130$MASH$NML&monitor=9130$MASH$NPM";
    s+= a.sprintf("&date=%i-%02i-%02iT00.00.00", yr, mo, day);
    ShellExecute(Handle,"open",s.c_str(),0,0,SW_SHOW);
@@ -620,31 +621,7 @@ void __fastcall TForm1::Button4Click(TObject *Sender)
 // test function
 void __fastcall TForm1::Button7Click(TObject *Sender)
 {
-    int     I;
-    TStream *DataIn;
-
-    HttpCli1->URL        = "http://www.aavso.org/cgi-bin/vsp.pl?chartid=11331ABQ&delimited=yes";
-    HttpCli1->Proxy      = "";//ProxyHostEdit->Text;
-    HttpCli1->ProxyPort  = "";//ProxyPortEdit->Text;
-    HttpCli1->RcvdStream = NULL;
-    try {
-        HttpCli1->Get   ();
-    } __except (TRUE) {
-        Memo4->Lines->Add("GET Failed !");
-        Memo4->Lines->Add("StatusCode   = " + IntToStr(HttpCli1->StatusCode));
-        Memo4->Lines->Add("ReasonPhrase = " + HttpCli1->ReasonPhrase);
-        return;
-    }
-
-    Memo4->Lines->Add("StatusCode = " + IntToStr(HttpCli1->StatusCode));
-
-    for (I = 0; I < HttpCli1->RcvdHeader->Count; I++)
-        Memo4->Lines->Add("hdr>" + HttpCli1->RcvdHeader->Strings[I]);
-
-    DataIn = new TFileStream(HttpCli1->DocName, fmOpenRead);
-    Memo4->Lines->LoadFromStream(DataIn);
-    delete DataIn;
-
+    // adfa
 }
 //---------------------------------------------------------------------------
 
@@ -712,3 +689,175 @@ void __fastcall TForm1::freqEditExit(TObject *Sender)
 }
 //---------------------------------------------------------------------------
 
+// http get
+bool __fastcall TForm1::httpGet(AnsiString URL, char* buffer, int bufsize)
+{
+   TStream *DataIn;
+   // simple encoding: replace ' ' with '+'
+   while(URL.Pos(" ")) URL[URL.Pos(" ")]= '+';
+   HttpCli1->URL        = URL;
+   HttpCli1->RcvdStream = NULL;
+   char altbuffer[100];
+   char* buf;
+   if(buffer==NULL) { // return not expected
+      buf= altbuffer;
+      bufsize= sizeof(buffer);
+   } else { buf= buffer; }
+   try {
+      HttpCli1->Get();
+      DataIn = new TFileStream(Form1->HttpCli1->DocName, fmOpenRead);
+      DataIn->ReadBuffer(buf, min(bufsize, DataIn->Size));
+      delete DataIn;
+      remove(HttpCli1->DocName.c_str());
+      return true;
+   } __except (TRUE) {
+      Form1->Memo4->Lines->Add("GET Failed !");
+      Form1->Memo4->Lines->Add("StatusCode   = " + IntToStr(Form1->HttpCli1->StatusCode));
+      Form1->Memo4->Lines->Add("ReasonPhrase = " + Form1->HttpCli1->ReasonPhrase);
+      return false;
+   }
+}
+void __fastcall TForm1::HttpCli1DocBegin(TObject *Sender)
+{
+    //Memo4->Lines->Add(HttpCli1->ContentType + " => " + HttpCli1->DocName);
+    //Memo4->Lines->Add("Document = " + HttpCli1->DocName);
+    HttpCli1->RcvdStream = new TFileStream(HttpCli1->DocName, fmCreate);
+}
+
+void __fastcall TForm1::HttpCli1DocEnd(TObject *Sender)
+{
+    if (HttpCli1->RcvdStream) {
+        delete HttpCli1->RcvdStream;
+        HttpCli1->RcvdStream = NULL;
+    }
+}
+//---------------------------------------------------------------------------
+
+// Sunrise/Sunset comps
+//   derived from solar.py from Rodney which comes from solareqns.pdf
+//	Based upon "Low Accuracy Equations" at
+//	http://www.esrl.noaa.gov/gmd/grad/solcalc/sollinks.html
+
+
+#define pi2 6.283185307
+
+void computeSunRiseandSet(double latitude, double longitude, short yday, short* sunrise, short* sunset)
+{
+   // lat and long in degrees, return sunrise and sunset in minutes
+   //	Based upon "Low Accuracy Equations" at
+	//http://www.esrl.noaa.gov/gmd/grad/solcalc/sollinks.html
+   double fy, fy2, fy3;
+	// Fractional year in radians
+	fy = pi2 *(yday - 1) / 365.0;
+	fy2 = 2 * fy;
+	fy3 = 3 * fy;
+   // Equation of time in minutes
+	double eqtime = 229.18*(0.000075+0.001868*cos(fy)-0.032077*sin(fy)-0.014615*cos(fy2)-0.040849*sin(fy2));
+	// Solar declination angle in radians
+	double decl = 0.006918-0.399912*cos(fy)+0.070257*sin(fy)-0.006758*cos(fy2)+0.000907*sin(fy2)-0.002697*cos(fy3)+0.00148*sin(fy3);
+
+	longitude = -longitude; // switch to West positive
+	double rlat = latitude* pi2/ 360.0;
+	//double rlong = longitude* pi2/ 360.0;
+	//double sin_lat = sin(rlat);
+	double cos_lat = cos(rlat);
+	//double sin_decl = sin(decl);
+	double cos_decl = cos(decl);
+
+	// Hour angle with zenith 90.833 deg
+	double ha1 = cos(90.833* pi2/ 360.0) / (cos_lat*cos_decl);
+	double ha2 = tan(rlat)*tan(decl);
+	double ha = acos(ha1 - ha2)* 360.0/pi2; // ha in degrees
+
+	// Sunrise,, sunset in minutes
+	*sunrise = 720 + 4*(longitude - ha) - eqtime;
+	if(*sunrise > 1440) *sunrise -= 1440;
+	else if(*sunrise < 0) *sunrise += 1440;
+	*sunset = 720 + 4*(longitude + ha) - eqtime;
+	if(*sunset > 1440) *sunset -= 1440;
+	else if(*sunset < 0) *sunset += 1440;
+}
+
+int DayOfYear(int yr, int mo, int day)
+{
+   int leap= 0, moday[]= {0, 0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334};
+   if((mo > 2) && ((yr%400 == 0) || ((yr%4==0) && (yr%100)) )) leap= 1;
+   return leap+ moday[mo]+ day;
+}
+
+// get flare data
+AnsiString lastFlare;
+short __fastcall TForm1::getFlareData(int yr, int mo, int day)
+{
+      AnsiString s;
+      FILE* fp;
+      char buf[256];
+      int x;
+//eg    ftp://ftp.swpc.noaa.gov/pub/warehouse/2015/2015_events/20150301events.txt
+      FtpClient1->HostName= "ftp.swpc.noaa.gov";
+      FtpClient1->HostDirName= s.sprintf("pub/warehouse/%04d/%04d_events", yr, yr);
+      FtpClient1->HostFileName= s.sprintf("%04d%02d%02devents.txt", yr, mo, day);
+      if(s==lastFlare) return flareCount; // did it already
+      FtpClient1->LocalFileName= "flare.txt";
+      if(FtpClient1->Receive()) {
+         fp= fopen("flare.txt", "r");
+         flareCount= 0;
+         while(fgets(buf, sizeof(buf), fp) && flareCount< FLAREMAX) {
+            if(buf[43]=='X') { // XRA  xray event
+               flares[flareCount].begin= ((buf[11]-48)* 600 + (buf[12]-48)*60 + (buf[13]-48)*10 + (buf[14]-48))/ 1440.0;
+               flares[flareCount].end= ((buf[18]-48)* 600 + (buf[19]-48)*60 + (buf[20]-48)*10 + (buf[21]-48))/ 1440.0;
+               x= 57;
+               while(buf[++x]!= ' ');
+               buf[x]= 0;
+               strcpy(flares[flareCount].desc, &buf[58]);
+               flareCount++;
+            }
+         }
+         lastFlare= s;
+         fclose(fp);
+//         remove("flare.txt");
+      }
+      return flareCount;
+}
+/*
+:Product: 20150301events.txt
+:Created: 2015 Mar 04 0357 UT
+:Date: 2015 03 01
+# Prepared by the U.S. Dept. of Commerce, NOAA, Space Weather Prediction Center
+# Please send comments and suggestions to SWPC.Webmaster@noaa.gov
+#
+# Missing data: ////
+# Updated every 5 minutes.
+#                            Edited Events for 2015 Mar 01
+#
+#Event    Begin    Max       End  Obs  Q  Type  Loc/Frq   Particulars       Reg#
+#-------------------------------------------------------------------------------
+
+4080       0158   0210      0232  G15  5   XRA  1-8A      C1.0    1.9E-03   2290
+4080       0158   0159      0211  LEA  3   FLA  N19W66    SF                2290
+
+4090       0449   0449      0451  LEA  3   FLA  N19W68    SF                2290
+
+4100       0453   0453      0503  LEA  3   FLA  N19W68    SF                2290
+
+4110       0504   0513      0521  G15  5   XRA  1-8A      C3.7    2.6E-03   2290
+4110       0505   0508      0526  LEA  3   FLA  N20W66    SF      ERU       2290
+4110       0508   ////      0509  LEA  C   RSP  027-047   III/1             2290
+
+4120      B0605   ////     B0655  LEA  3   EPL  ////      0.24              2289
+
+4130       0724   0725      0730  LEA  3   FLA  N19W71    SF                2290
+
+4140       0855   0956      1021  G15  5   XRA  1-8A      B7.4    1.7E-03   2290
+
+4150      B0957  U0959     A1001  SVI  3   FLA  N18W72    SF                2290
+
+4160       1255   1257      1302  SVI  3   FLA  N18W74    SF                2290
+
+4170       1314   1314      1321  SVI  3   FLA  N05E09    SF      ERU       2293
+
+4180       1533   1613      1631  G15  5   XRA  1-8A      C6.8    1.3E-02   2290
+4180 +     1552   1554      1609  HOL  3   FLA  N20W74    SF      ERU       2290
+
+4190       1711   1713      1716  HOL  2   FLA  N20W74    SF      DSD       2290
+*/
