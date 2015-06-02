@@ -28,6 +28,9 @@ TForm1 *Form1;
   - increase FLAREMAX; sometimes there are more!
   - show events in the middle of the graph
   - fix fault on bailing out of file open; Canceling the log file open clears the file list, so test for it
+    late addition:
+      - don't unzoom after add event
+      - scroll in all directions
   1.07
   - tidy up httpget
   - include quality in Stanford web call
