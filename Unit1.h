@@ -94,6 +94,8 @@ __published:	// IDE-managed Components
    TArrowSeries *Series2;
    TFtpClient *FtpClient1;
    TArrowSeries *Series3;
+   TLabel *Label5;
+   TButton *Button8;
    void __fastcall Open1Click(TObject *Sender);
    void __fastcall Quit1Click(TObject *Sender);
    void __fastcall FormCreate(TObject *Sender);
@@ -117,6 +119,8 @@ __published:	// IDE-managed Components
    void __fastcall LogTypeSuperSIDClick(TObject *Sender);
    void __fastcall stationEditExit(TObject *Sender);
    void __fastcall freqEditExit(TObject *Sender);
+   void __fastcall Memo1DblClick(TObject *Sender);
+   void __fastcall Button8Click(TObject *Sender);
 private:	// User declarations
 
 public:		// User declarations

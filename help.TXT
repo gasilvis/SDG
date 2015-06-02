@@ -66,6 +66,7 @@ Definition is a subjective estimate of an observer's confidence in the event. No
 
 Sometimes you need to shut down the sidmonitor. Before you do you should save the buffered data of the last day. What can you do with that data? This application has a tool for recovering this data into log files (with just part of a days data) that can then be surveyed with the grabber tool. See the Buffer tab. 
 
+There is a review feature where from the Report screen you can double click on a report line and the program will show you the log file that derived that report line from. That's assuming the log files are in the currently specified log directory.
 
 Any problems with this program or suggestions for improvement, please email me at A141@GASilvis.net .
 

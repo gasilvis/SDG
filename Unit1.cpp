@@ -1,4 +1,4 @@
-   //---------------------------------------------------------------------------
+//---------------------------------------------------------------------------
 
 #include <vcl.h>
 #pragma hdrstop
@@ -18,6 +18,23 @@
 #pragma link "WSocket"
 #pragma resource "*.dfm"
 TForm1 *Form1;
+
+#define Version 1.08
+// when you change this, update gasilvis.com/SID/SIDlog.php which should return this value
+/*
+  1.08
+  - add feature: double click on report and open related log file
+  - add FLA flare events
+  - increase FLAREMAX; sometimes there are more!
+  - show events in the middle of the graph
+  - fix fault on bailing out of file open; Canceling the log file open clears the file list, so test for it
+  1.07
+  - tidy up httpget
+  - include quality in Stanford web call
+  - capture siteLat/Long
+  - show sunrise/sunset times of site and station
+  - show known XRay events on the graph
+*/
 
 void computeSunRiseandSet(double latitude, double longitude, short yday, short* sunrise, short* sunset);
 int DayOfYear(int yr, int mo, int day);
@@ -71,7 +88,7 @@ typedef struct {
    double end;
    char  desc[15];
 } flareDetail;
-#define FLAREMAX 20
+#define FLAREMAX 200
 flareDetail flares[FLAREMAX];
 short flareCount= 0;
 
@@ -83,16 +100,6 @@ __fastcall TForm1::TForm1(TComponent* Owner)
 }
 //---------------------------------------------------------------------------
 
-#define Version 1.07
-// when you change this, update gasilvis.com/SID/SIDlog.php which should return this value
-/*
-  1.07
-  - tidy up httpget
-  - include quality in Stanford web call
-  - capture siteLat/Long
-  - show sunrise/sunset times of site and station
-  - show known XRay events on the graph
-*/
 AnsiString dataDir, reportDir, reportFile, reportPath, lastFile; // Path is the combination of Dir and File
 #define LogTypesNum  10
 TMenuItem *LogTypes[LogTypesNum]; //= { LogTypeSuperSID, LogTypeLASPextract etc   set at create time};
@@ -169,15 +176,15 @@ void __fastcall TForm1::Open1Click(TObject *Sender)
       // in ini file OpenDialog1->FilterIndex = 0; // start the dialog showing all files
       if(OpenDialog1->Execute()){
          dataFiles= OpenDialog1->Files;
-         filesIndex= 0;
+         filesIndex= (dataFiles->Count)? 0: -1;
          displayNextFile(Sender);
-      };
-      // get observer? No.
-      // Save selection info
-      TIniFile *ini= new TIniFile(INIfilename);
-      ini->WriteString("Setup", "dataDir", dataDir); // set in displayNextFile
-      ini->WriteInteger("Setup", "FilterIndex", OpenDialog1->FilterIndex);
-      delete ini;
+         // Save selection info
+         TIniFile *ini= new TIniFile(INIfilename);
+         ini->WriteString("Setup", "dataDir", dataDir); // set in displayNextFile
+         ini->WriteInteger("Setup", "FilterIndex", OpenDialog1->FilterIndex);
+         delete ini;
+        // get observer? No.  ??
+      }
    }
 }
 //---------------------------------------------------------------------------
@@ -296,7 +303,7 @@ void __fastcall TForm1::displayNextFile(TObject *Sender)
     // get flare data
 //    flareCount= getFlareData(yr, mo, day);
     for(int ii= 0; ii< flareCount; ii++) {
-       dynamic_cast<TArrowSeries*>(Chart1->Series[2])->AddArrow(flares[ii].begin, 0.9*maxY, flares[ii].end, 0.9*maxY, flares[ii].desc, clTeeColor);
+       dynamic_cast<TArrowSeries*>(Chart1->Series[2])->AddArrow(flares[ii].begin, 0.5*maxY, flares[ii].end, 0.5*maxY, flares[ii].desc, clTeeColor);
     }
 
 
@@ -375,6 +382,8 @@ void __fastcall TForm1::Chart1ClickSeries(TCustomChart *Sender,
          startEdit->Text= s.sprintf("%02d%02d", hr, min);
          startMin= hr*60 + min;
          maxRB->Checked= true;
+         //Chart1->Series[0]->ValueColor[ValueIndex]= clRed; not visible enough
+         //Chart1->Series[0]->Marks[ValueIndex].  = "start";  needs investigation
       } else if (maxRB->Checked) {
          maxEdit->Text= s.sprintf("%02d%02d", hr, min);
          maxMin= hr*60 + min;
@@ -420,6 +429,8 @@ void __fastcall TForm1::Button2Click(TObject *Sender)
 
 void __fastcall TForm1::Button1Click(TObject *Sender)
 {
+   if(dataFiles->Count==0)
+      filesIndex= -1;
    if(filesIndex==-1) {
       ShowMessage("No files opened");
    }else if(filesIndex== dataFiles->Count - 1) {
@@ -433,6 +444,8 @@ void __fastcall TForm1::Button1Click(TObject *Sender)
 
 void __fastcall TForm1::Button3Click(TObject *Sender)
 {
+   if(dataFiles->Count==0)
+      filesIndex= -1;
    if(filesIndex==-1) {
       ShowMessage("No files opened");
    }else if(filesIndex== 0) {
@@ -803,7 +816,7 @@ short __fastcall TForm1::getFlareData(int yr, int mo, int day)
          fp= fopen("flare.txt", "r");
          flareCount= 0;
          while(fgets(buf, sizeof(buf), fp) && flareCount< FLAREMAX) {
-            if(buf[43]=='X') { // XRA  xray event
+            if(buf[43]=='X' || buf[43]=='F') { // XRA  xray or FLA flare event
                flares[flareCount].begin= ((buf[11]-48)* 600 + (buf[12]-48)*60 + (buf[13]-48)*10 + (buf[14]-48))/ 1440.0;
                flares[flareCount].end= ((buf[18]-48)* 600 + (buf[19]-48)*60 + (buf[20]-48)*10 + (buf[21]-48))/ 1440.0;
                x= 57;
@@ -861,3 +874,70 @@ short __fastcall TForm1::getFlareData(int yr, int mo, int day)
 
 4190       1711   1713      1716  HOL  2   FLA  N20W74    SF      DSD       2290
 */
+
+
+void __fastcall TForm1::Memo1DblClick(TObject *Sender)
+{
+   // dbl click on memo and display the relevant log file
+
+   AnsiString s, fn, line, yr, mo, day, station;
+   int x, i;
+
+   if(Memo1->CaretPos.x > 70 || Memo1->CaretPos.x < 0) return;
+   x= Memo1->CaretPos.y;
+   line= Memo1->Lines->Strings[x];
+   //Label5->Caption= line;
+
+   // get a valid line?
+   //eg "40   150301  1559 1633 1604                 2     5WU18              A141"
+   // get yr, mo , day, station
+   if(line.Length() > 60) {
+     x= line.SubString(6 ,2).ToInt();
+     x+= (x<58)? 2000: 1900;
+     yr= s.sprintf("%i", x);
+     mo= "-"+ line.SubString(8, 2);
+     day= "-"+ line.SubString(10,2);
+     station= line.SubString(52, 2);
+     //Label5->Caption= yr + mo + day + station;
+   } else {
+      ShowMessage("no report line captured");
+      return;
+   }
+
+   // get files in current log directory
+   //get dir from dataDir
+   struct ffblk ffblk;
+   dataFiles->Clear();
+   i= findfirst((dataDir+ "\\*.*").c_str(), &ffblk, 0);
+   while (!i) {
+      //Memo1->Lines->Add(s.sprintf("  %s\n", ffblk.ff_name));
+      fn= AnsiString(ffblk.ff_name);
+      if(fn.Pos(yr) && fn.Pos(mo) && fn.Pos(day) && fn.Pos(station) && (fn.Pos(mo)<fn.Pos(day)) ) {
+         dataFiles->Add(dataDir+ fn);
+         //Memo1->Lines->Add(fn);
+      }
+      i= findnext(&ffblk);
+   }
+   if(dataFiles->Count) {
+      filesIndex= 0;
+      if(dataFiles->Count > 1)
+         ShowMessage("more than one possible source log file");
+      displayNextFile(Sender);
+      startEdit->Text= line.SubString(14, 5);
+      maxEdit->Text= line.SubString(19, 5);
+      endEdit->Text= line.SubString(24, 5);
+      PageControl1->ActivePage= graphTab;
+   } else
+      ShowMessage("Could not find log file");
+
+}
+//---------------------------------------------------------------------------
+
+
+
+void __fastcall TForm1::Button8Click(TObject *Sender)
+{
+   Memo1DblClick(Sender);
+}
+//---------------------------------------------------------------------------
+

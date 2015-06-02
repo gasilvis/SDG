@@ -429,6 +429,14 @@ object Form1: TForm1
         Height = 23
         Caption = 'no report file '
       end
+      object Label5: TLabel
+        Left = 32
+        Top = 600
+        Width = 369
+        Height = 23
+        Caption = 'Label5'
+        Visible = False
+      end
       object Memo1: TMemo
         Left = 16
         Top = 40
@@ -442,6 +450,7 @@ object Form1: TForm1
         ParentFont = False
         ScrollBars = ssVertical
         TabOrder = 0
+        OnDblClick = Memo1DblClick
       end
       object Button6: TButton
         Left = 24
@@ -464,7 +473,7 @@ object Form1: TForm1
           Left = 24
           Top = 32
           Width = 113
-          Height = 17
+          Height = 20
           Hint = 'report file will by month, all stations combined'
           Caption = 'by month'
           TabOrder = 0
@@ -474,13 +483,23 @@ object Form1: TForm1
           Left = 184
           Top = 32
           Width = 217
-          Height = 17
+          Height = 20
           Caption = 'by month and station'
           Checked = True
           TabOrder = 1
           TabStop = True
           OnClick = reportByMonthClick
         end
+      end
+      object Button8: TButton
+        Left = 192
+        Top = 568
+        Width = 75
+        Height = 25
+        Caption = 'Button8'
+        TabOrder = 3
+        Visible = False
+        OnClick = Button8Click
       end
     end
     object bufferTab: TTabSheet
@@ -768,6 +787,13 @@ object Form1: TForm1
             'surveyed with the grabber tool. See the '
           'Buffer tab. '#10
           #10
+          
+            'There is a review feature where from the Report screen you can d' +
+            'ouble click on a report line and the '
+          
+            'program will show you the log file that derived that report line' +
+            ' from. That'#39's assuming the log files are '
+          'in the currently specified log directory.'#10
           #10
           
             'Any problems with this program or suggestions for improvement, p' +
