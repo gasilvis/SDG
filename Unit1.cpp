@@ -507,7 +507,7 @@ void __fastcall TForm1::addButtonClick(TObject *Sender)
          // append record
          Memo1->Lines->Add(s);
          Memo1->Lines->SaveToFile(reportLabel->Caption);
-         Chart1->UndoZoom();
+//         Chart1->UndoZoom();
       }
 
 

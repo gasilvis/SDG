@@ -93,7 +93,6 @@ object Form1: TForm1
         Top = 225
         Width = 945
         Height = 370
-        AllowPanning = pmHorizontal
         AnimatedZoom = True
         BackWall.Brush.Color = clWhite
         BackWall.Brush.Style = bsClear
