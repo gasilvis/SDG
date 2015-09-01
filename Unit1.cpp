@@ -19,9 +19,11 @@
 #pragma resource "*.dfm"
 TForm1 *Form1;
 
-#define Version 1.08
+#define Version 1.09
 // when you change this, update gasilvis.com/SID/SIDlog.php which should return this value
 /*
+  1.09
+  - better flare data display
   1.08
   - add feature: double click on report and open related log file
   - add FLA flare events
@@ -90,6 +92,7 @@ typedef struct {
    double begin;
    double end;
    char  desc[15];
+   char  type;
 } flareDetail;
 #define FLAREMAX 200
 flareDetail flares[FLAREMAX];
@@ -210,7 +213,7 @@ void __fastcall TForm1::displayNextFile(TObject *Sender)
     int /* global: yr, mo, day,*/ hr, min, sec, x;
     float dp, time= 0;
     AnsiString sb;
-    float y;
+    float y, vpos;
     short siteSR, siteSS, stationSR, stationSS, stationIndex;
 
     Chart1->Series[0]->Clear();
@@ -306,7 +309,8 @@ void __fastcall TForm1::displayNextFile(TObject *Sender)
     // get flare data
 //    flareCount= getFlareData(yr, mo, day);
     for(int ii= 0; ii< flareCount; ii++) {
-       dynamic_cast<TArrowSeries*>(Chart1->Series[2])->AddArrow(flares[ii].begin, 0.5*maxY, flares[ii].end, 0.5*maxY, flares[ii].desc, clTeeColor);
+       vpos= maxY*(flares[ii].type=='F'?0.45:0.55);
+       dynamic_cast<TArrowSeries*>(Chart1->Series[2])->AddArrow(flares[ii].begin, vpos, flares[ii].end, vpos, flares[ii].desc, clTeeColor);
     }
 
 
@@ -426,7 +430,7 @@ void __fastcall TForm1::observerEditExit(TObject *Sender)
 
 void __fastcall TForm1::Button2Click(TObject *Sender)
 {
-    Chart1->UndoZoom();
+    Chart1->UndoZoom();      
 }
 //---------------------------------------------------------------------------
 
@@ -820,6 +824,7 @@ short __fastcall TForm1::getFlareData(int yr, int mo, int day)
          flareCount= 0;
          while(fgets(buf, sizeof(buf), fp) && flareCount< FLAREMAX) {
             if(buf[43]=='X' || buf[43]=='F') { // XRA  xray or FLA flare event
+               flares[flareCount].type= buf[43];
                flares[flareCount].begin= ((buf[11]-48)* 600 + (buf[12]-48)*60 + (buf[13]-48)*10 + (buf[14]-48))/ 1440.0;
                flares[flareCount].end= ((buf[18]-48)* 600 + (buf[19]-48)*60 + (buf[20]-48)*10 + (buf[21]-48))/ 1440.0;
                x= 57;
