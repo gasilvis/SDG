@@ -1,6 +1,6 @@
 //---------------------------------------------------------------------------
 
-#include <vcl.h>
+#include <vcl.h>              
 #pragma hdrstop
 
 #include "Unit1.h"
@@ -24,6 +24,7 @@ TForm1 *Form1;
 /*
   1.10
   - fix missing help text
+  - httpget fix; terminate buffer
   1.09
   - better flare data display
   1.08
@@ -729,6 +730,7 @@ bool __fastcall TForm1::httpGet(AnsiString URL, char* buffer, int bufsize)
       HttpCli1->Get();
       DataIn = new TFileStream(Form1->HttpCli1->DocName, fmOpenRead);
       DataIn->ReadBuffer(buf, min(bufsize, DataIn->Size));
+      buf[min(bufsize, DataIn->Size)]= 0; // terminate string
       delete DataIn;
       remove(HttpCli1->DocName.c_str());
       return true;

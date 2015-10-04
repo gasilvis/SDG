@@ -569,12 +569,12 @@ object Form1: TForm1
           
             'graph to grab the times and then it puts it into the AAVSO forma' +
             't report file, ready for submission at '
-          'the end of the month.'#10
-          #10
+          'the end of the month.'#10#13#10#10
+          ''
           
             'First step is to set your observer id and the directory of the r' +
-            'eport files.'#10
-          #10
+            'eport files.'#10#13#10#10
+          ''
           
             'From there you select a batch of observation files. These files ' +
             'need to be in the SuperSID format (txt '
@@ -585,15 +585,15 @@ object Form1: TForm1
           '# Frequency = 18300'#10
           '2015-03-01 00:00:00, 50885.6558753'#10
           '2015-03-01 00:00:05, 50885.6558753'#10
-          '2015-03-01 00:00:10, 50885.6558753'#10
-          #10
+          '2015-03-01 00:00:10, 50885.6558753'#10#13#10#10
+          ''
           
             'If your log files are in a different format but have the same da' +
             'ta, contact me and I'#39'll see about '
           
             'making modifications to the application for you. A141@GASilvis.n' +
-            'et.'#10
-          #10
+            'et.'#10#13#10#10
+          ''
           
             'If you see a flare event in the graph, zoom in on it by drawing ' +
             'a box around it. You can also scroll the '
@@ -620,16 +620,16 @@ object Form1: TForm1
             'finiteness field. You can add D, E '
           
             'and U modifiers to the edit boxes as appropriate. Now you can cl' +
-            'ick the "add to report" button. '#10
-          #10
+            'ick the "add to report" button. '#10#13#10#10
+          ''
           
             'When you click on the graph the time will be put in the edit box' +
             ' with the radio check box lit. These will '
           
             'light up in turn. If you need to go back and change an entry, ju' +
             'st reclick the radio icon so that your '
-          'graph click will go to the right place.'#10
-          #10
+          'graph click will go to the right place.'#10#13#10#10
+          ''
           
             'Report files are named <observer ID><year><mo>.txt. The appropri' +
             'ate report file is opened based '
@@ -638,46 +638,48 @@ object Form1: TForm1
             'tly from the Report tab (eg, to remove a '
           
             'record) and then you need to save the updated report with your e' +
-            'dits.'#10
-          #10
+            'dits.'#10#13#10#10
+          ''
           
             'The Next/Prev File buttons take you through the list of files yo' +
-            'u selected with the File/Open process.'#10
-          #10
+            'u selected with the File/Open process.'#10#13#10#10
+          ''
           
             'The main screen, the Graph tab, will show you the last log file ' +
             'that you processed. Helpful if you are '
           
             'scanning the files once a week as it shows you where you left of' +
-            'f.'#10
-          #10
+            'f.'#10#13#10#10
+          ''
           
             'If you have a graph open and your data is also on the Stanford S' +
             'ID Data Access website, you can '
           
             'click on the button below the graph and view that data in a brow' +
             'ser. This is handy as that display will '
-          'include the known flares on the graph.'#10
-          #10
-          #10
+          'include the known flares on the graph.'#10#13#10#10
+          #13#10#10
+          ''
           
             'Instructions for extracting the event times and report format is' +
             ' taken from:'#10
           
             'http://www.aavso.org/reducing-data-gathered-vlf-monitoring-syste' +
             'ms'#10
-          'with minor modifications.'#10
-          #10
+          'with minor modifications.'#10#13#10#10
+          ''
           'Reducing Data Gathered by VLF Monitoring Systems'#10
           
             '(Extracted from SID Technical Bulletin Vol. 3, Number 4, Oct. 19' +
-            '92)'#10
-          #10
+            '92)'#10#13#10#10
+          ''
           
             'The reduction process is quite simple, and consists of the steps' +
             ' which follow. First, the universal time '
-          'for each of three event-phases must be measured for each SID. '#10
-          #10
+          
+            'for each of three event-phases must be measured for each SID. '#10#13 +
+            #10#10
+          ''
           
             'Event Start: The moment when an event begins. Be aware that the ' +
             'amplitude of different events '
@@ -689,8 +691,8 @@ object Form1: TForm1
             'ed to the recorded time. Look for the '
           
             'beginning of the sharp rise, same as for the event max (see belo' +
-            'w).'#10
-          #10
+            'w).'#10#13#10#10
+          ''
           
             'Event End: Of the three times, the end time is the most difficul' +
             't to determine. It is defined as the '
@@ -700,15 +702,15 @@ object Form1: TForm1
           
             'In the latter situation, the letter '#39'D'#39' (after) is appended to t' +
             'hat time, which in turn becomes the start '
-          'time for the following event.'#10
-          #10
+          'time for the following event.'#10#13#10#10
+          ''
           
             'Event Maximum: The moment when the ascending (descending in the ' +
             'case of inverted events) branch '
           
             'slows its sharp rise. Note that this generally does not coincide' +
-            ' with the event'#39's peak amplitude.'#10
-          #10
+            ' with the event'#39's peak amplitude.'#10#13#10#10
+          ''
           
             'If the trace goes off-scale as maximum is approached, or is inte' +
             'rfered with in some other manner '
@@ -720,8 +722,8 @@ object Form1: TForm1
             ' and the last determinable time is '
           
             'fourteen hours, ten minutes (1410), the time is recorded as 141O' +
-            'U.'#10
-          #10
+            'U.'#10#13#10#10
+          ''
           'Duration'#9#9'Importance'#10
           '< 19 minutes'#9'1-'#10
           '19-25'#9#9'1'#10
@@ -739,8 +741,8 @@ object Form1: TForm1
           
             'time from the end time. This is computed automatically for you. ' +
             'The table above associates the '
-          'Importance rating with event duration.'#10
-          #10
+          'Importance rating with event duration.'#10#13#10#10
+          ''
           
             'With respect to the observer'#39's typical daily trace, a class 1 SI' +
             'D is an event with small intensity '
@@ -749,8 +751,8 @@ object Form1: TForm1
             'tensity event with a fairly long '
           
             'duration, and a class 3 describes a SID with a '#39'great'#39' change in' +
-            ' intensity and long duration.'#10
-          #10
+            ' intensity and long duration.'#10#13#10#10
+          ''
           'Confidence'#9#9'Definition'#10
           'Questionable'#9#9'0'#10
           'Possible'#9#9#9'1'#10
@@ -775,9 +777,9 @@ object Form1: TForm1
             ' sources. Other observers'#39' results '
           
             'will be compared to eliminate suspect events before a final repo' +
-            'rt is submitted to the NGDC.'#10
-          #10
-          #10
+            'rt is submitted to the NGDC.'#10#13#10#10
+          #13#10#10
+          ''
           
             'Sometimes you need to shut down the sidmonitor. Before you do yo' +
             'u should save the buffered data '
@@ -787,21 +789,21 @@ object Form1: TForm1
           
             'into log files (with just part of a days data) that can then be ' +
             'surveyed with the grabber tool. See the '
-          'Buffer tab. '#10
-          #10
+          'Buffer tab. '#10#13#10#10
+          ''
           
             'There is a review feature where from the Report screen you can d' +
             'ouble click on a report line and the '
           
             'program will show you the log file that derived that report line' +
             ' from. That'#39's assuming the log files are '
-          'in the currently specified log directory.'#10
-          #10
+          'in the currently specified log directory.'#10#13#10#10
+          ''
           
             'Any problems with this program or suggestions for improvement, p' +
             'lease email me at '
-          'A141@GASilvis.net .'#10
-          #10
+          'A141@GASilvis.net .'#10#13#10#10
+          ''
           'George'#10)
         ReadOnly = True
         ScrollBars = ssVertical
