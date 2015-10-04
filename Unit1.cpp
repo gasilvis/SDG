@@ -19,9 +19,11 @@
 #pragma resource "*.dfm"
 TForm1 *Form1;
 
-#define Version 1.09
+#define Version 1.10
 // when you change this, update gasilvis.com/SID/SIDlog.php which should return this value
 /*
+  1.10
+  - fix missing help text
   1.09
   - better flare data display
   1.08
