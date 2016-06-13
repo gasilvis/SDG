@@ -77,7 +77,6 @@ __published:	// IDE-managed Components
    TButton *Button5;
    TLabel *lastFileLabel;
    TMemo *Memo3;
-   TMemo *Memo4;
    THttpCli *HttpCli1;
    TButton *Button4;
    TLabel *versionLabel;
@@ -96,6 +95,32 @@ __published:	// IDE-managed Components
    TArrowSeries *Series3;
    TLabel *Label5;
    TButton *Button8;
+   TTabSheet *graphsTab;
+   TChart *Chart2;
+   TArrowSeries *ArrowSeries1;
+   TArrowSeries *ArrowSeries2;
+   TLineSeries *Series4;
+   TLineSeries *Series5;
+   TLineSeries *Series6;
+   TLineSeries *Series7;
+   TLineSeries *Series8;
+   TLineSeries *Series9;
+   TMemo *Memo5;
+   TPanel *Panel1;
+   TLabel *Label8;
+   TEdit *EditFL;
+   TLabel *Label9;
+   TEdit *EditPic;
+   TLabel *Label10;
+   TEdit *EditDec;
+   TButton *Button9;
+   TLabel *Result;
+   TLabel *piccnt;
+   TEdit *EditPicCnt;
+   TButton *Button10;
+   TSaveDialog *SaveDialog1;
+   TLabel *Label11;
+   TMemo *Memo4;
    void __fastcall Open1Click(TObject *Sender);
    void __fastcall Quit1Click(TObject *Sender);
    void __fastcall FormCreate(TObject *Sender);
@@ -121,6 +146,8 @@ __published:	// IDE-managed Components
    void __fastcall freqEditExit(TObject *Sender);
    void __fastcall Memo1DblClick(TObject *Sender);
    void __fastcall Button8Click(TObject *Sender);
+   void __fastcall Button9Click(TObject *Sender);
+   void __fastcall Button10Click(TObject *Sender);
 private:	// User declarations
 
 public:		// User declarations

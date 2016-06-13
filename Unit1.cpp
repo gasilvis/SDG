@@ -19,9 +19,14 @@
 #pragma resource "*.dfm"
 TForm1 *Form1;
 
-#define Version 1.10
+#define Version 1.11
 // when you change this, update gasilvis.com/SID/SIDlog.php which should return this value
 /*
+  1.11
+  - set DecimalSeparator so european's don't get commas for decimals
+  - button to save chart as bmp
+  - added warning msg for flare data failure
+  - started work on Graph 2;
   1.10
   - fix missing help text
   - httpget fix; terminate buffer
@@ -123,10 +128,13 @@ void __fastcall TForm1::FormCreate(TObject *Sender)
    float cver;
    AnsiString s;
    int lt, i;
+   ThousandSeparator= ',';
+   DecimalSeparator= '.';
    //TScreen->MenuFont=       ??  trying to set menufont. can't do
    // set window header
    Form1->Caption= "SID Data Grabber Application, "+ FormatFloat("version 0.00", Version);
-
+   testLabel->Caption= "";
+   
    // get current version information
    if(httpGet("http://www.gasilvis.com/SID/SIDlog.php", cp, sizeof(cp))) {
       sscanf(cp, "%f", &cver);
@@ -170,7 +178,7 @@ void __fastcall TForm1::FormCreate(TObject *Sender)
 
 }
 //---------------------------------------------------------------------------
-AnsiString dataFile;
+AnsiString dataFile= "na.csv";
 TStrings *dataFiles= new TStringList;
 int filesIndex= -1;
 
@@ -204,8 +212,11 @@ void __fastcall TForm1::Quit1Click(TObject *Sender)
 }
 //---------------------------------------------------------------------------
 int SampleRate= 0, sidMonitor= 0;
-int startMin, endMin, maxMin, yr, mo, day;
+int startMin, endMin, maxMin, yr, mo, day, lastDay, lastMo, lastYr;
 double siteLat, siteLong;
+#define maxG2 6
+int G2index= 0;
+
 
 void __fastcall TForm1::displayNextFile(TObject *Sender)
 {
@@ -232,6 +243,7 @@ void __fastcall TForm1::displayNextFile(TObject *Sender)
 
     startRB->Checked= true; // start at the start
     startMin= maxMin= endMin= 0;
+    lastYr= yr; lastMo= mo; lastDay= day;
     yr= mo= 0;
     while(fgets(buf, 64, fp)) {
         if(buf[0]=='#') {
@@ -332,6 +344,32 @@ void __fastcall TForm1::displayNextFile(TObject *Sender)
        }
        openReportFile(Sender, true);
     }
+
+
+    // Graph 2 page
+    if(lastYr!=yr || lastMo!=mo || lastDay!=day) { // reset page
+       for(int i= 0; i< 2+ maxG2; i++)
+          Chart2->Series[i]->Clear();
+       Chart2->Title->Text->Clear();
+       Chart2->Title->Text->Add(dataFile); // do just date and site?
+       Memo5->Lines->Clear();
+       // set site sunrise/fall
+       dynamic_cast<TArrowSeries*>(Chart2->Series[0])->AddArrow(siteSR/1440.0, 0, siteSR/1440.0, maxY, "site", clTeeColor);
+       dynamic_cast<TArrowSeries*>(Chart2->Series[0])->AddArrow(siteSS/1440.0, maxY, siteSS/1440.0, 0, "site", clTeeColor);
+       // set the flare data
+       for(int ii= 0; ii< flareCount; ii++) {
+          vpos= maxY*(flares[ii].type=='F'?0.45:0.55);
+          dynamic_cast<TArrowSeries*>(Chart2->Series[1])->AddArrow(flares[ii].begin, vpos, flares[ii].end, vpos, flares[ii].desc, clTeeColor);
+       }
+    }
+
+
+    Memo5->Lines->Add(dataFile);
+    for(int i= 0; i< Chart1->Series[0]->Count(); i++)
+        Chart2->Series[2]->AddXY(Chart1->Series[0]->XValue[i], Chart1->Series[0]->YValue[i], "", clTeeColor);
+
+    Chart2->UndoZoom();
+
 }
 //---------------------------------------------------------------------------
 
@@ -817,6 +855,7 @@ short __fastcall TForm1::getFlareData(int yr, int mo, int day)
       FILE* fp;
       char buf[256];
       int x;
+      testLabel->Caption="";
 //eg    ftp://ftp.swpc.noaa.gov/pub/warehouse/2015/2015_events/20150301events.txt
       FtpClient1->HostName= "ftp.swpc.noaa.gov";
       FtpClient1->HostDirName= s.sprintf("pub/warehouse/%04d/%04d_events", yr, yr);
@@ -841,6 +880,13 @@ short __fastcall TForm1::getFlareData(int yr, int mo, int day)
          lastFlare= s;
          fclose(fp);
 //         remove("flare.txt");
+      } else { // failed...
+         Form1->Memo4->Lines->Add("getflaredata failed!");
+         Form1->Memo4->Lines->Add(FtpClient1->HostName+ "/"+ FtpClient1->HostDirName+ "/"+ FtpClient1->HostFileName);
+         lastFlare= "";
+         flareCount= 0;
+         Form1->Memo4->Lines->Add("error msg: "+ FtpClient1->ErrorMessage);
+         testLabel->Caption= "failed to get flare data";
       }
       return flareCount;
 }
@@ -950,6 +996,44 @@ void __fastcall TForm1::Memo1DblClick(TObject *Sender)
 void __fastcall TForm1::Button8Click(TObject *Sender)
 {
    Memo1DblClick(Sender);
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TForm1::Button9Click(TObject *Sender)
+{
+  long double FocalLength= EditFL->Text.ToDouble(); //  750.0;  // in mm
+  long double PixelHeight= EditPic->Text.ToDouble()/1000.0; // 9.0/1000.0; // in mm    = 9 um
+  long double  pi=3.14159265;
+
+  long double  ArcSecPerPixel =
+          (  ( atan((PixelHeight/2.0)/FocalLength)*2.0*180.0/pi )*3600.0   );
+                   // 2.475
+
+long double RotationEarth = (360.0*3600.0)/(23.0*3600.0 + 56.0*60.0 + 4.0);
+  // Rotation of the earth in arc seconds per second
+  // 15.04108444
+
+long double Shiftime0 =ArcSecPerPixel/RotationEarth;
+                      // seconds to read one line at 0 dec
+               //  0.164561
+
+long double Declination= EditDec->Text.ToDouble(); //20.0;
+
+long double  Shiftime = Shiftime0 / cos (Declination*pi/180.0);
+                    // seconds to read one line at Declination
+                    //     0.175122
+   Result->Caption= FormatFloat("0.00", Shiftime * EditPicCnt->Text.ToInt());
+}
+//---------------------------------------------------------------------------
+
+
+void __fastcall TForm1::Button10Click(TObject *Sender)
+{
+    SaveDialog1->FileName= ChangeFileExt( dataFile, ".BMP");
+
+    if(SaveDialog1->Execute()) {
+       Chart1->SaveToBitmapFile(SaveDialog1->FileName);
+    }
 }
 //---------------------------------------------------------------------------
 

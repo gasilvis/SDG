@@ -1,6 +1,6 @@
 object Form1: TForm1
-  Left = 337
-  Top = 127
+  Left = 341
+  Top = 42
   Width = 979
   Height = 741
   HorzScrollBar.Visible = False
@@ -82,11 +82,10 @@ object Form1: TForm1
       end
       object testLabel: TLabel
         Left = 520
-        Top = 616
-        Width = 81
+        Top = 608
+        Width = 193
         Height = 23
         Caption = 'testLabel'
-        Visible = False
       end
       object Chart1: TChart
         Left = 8
@@ -417,6 +416,15 @@ object Form1: TForm1
         Text = '0'
         OnExit = freqEditExit
       end
+      object Button10: TButton
+        Left = 776
+        Top = 608
+        Width = 139
+        Height = 25
+        Caption = 'Save as BMP'
+        TabOrder = 11
+        OnClick = Button10Click
+      end
     end
     object reportTab: TTabSheet
       Caption = 'Report'
@@ -501,9 +509,361 @@ object Form1: TForm1
         OnClick = Button8Click
       end
     end
+    object graphsTab: TTabSheet
+      Caption = 'Graph 2'
+      ImageIndex = 3
+      object Label11: TLabel
+        Left = 56
+        Top = 80
+        Width = 167
+        Height = 23
+        Caption = 'Under Construction'
+      end
+      object Chart2: TChart
+        Left = 8
+        Top = 225
+        Width = 945
+        Height = 370
+        AnimatedZoom = True
+        BackWall.Brush.Color = clWhite
+        BackWall.Brush.Style = bsClear
+        Title.Font.Charset = DEFAULT_CHARSET
+        Title.Font.Color = clBlack
+        Title.Font.Height = -17
+        Title.Font.Name = 'Arial'
+        Title.Font.Style = [fsBold]
+        Title.Text.Strings = (
+          'TChart')
+        OnClickSeries = Chart1ClickSeries
+        BottomAxis.AxisValuesFormat = '0000'
+        BottomAxis.DateTimeFormat = 'hhmm'
+        BottomAxis.LabelStyle = talValue
+        ClipPoints = False
+        Legend.Visible = False
+        RightAxis.Visible = False
+        TopAxis.AxisValuesFormat = '0000'
+        TopAxis.DateTimeFormat = 'hhmm'
+        TopAxis.LabelStyle = talValue
+        View3D = False
+        View3DWalls = False
+        TabOrder = 0
+        object ArrowSeries1: TArrowSeries
+          Marks.ArrowLength = 0
+          Marks.BackColor = clSilver
+          Marks.Frame.Visible = False
+          Marks.Transparent = True
+          Marks.Visible = True
+          SeriesColor = clRed
+          ShowInLegend = False
+          Pointer.HorizSize = 12
+          Pointer.InflateMargins = False
+          Pointer.Pen.Width = 3
+          Pointer.Style = psRectangle
+          Pointer.VertSize = 13
+          Pointer.Visible = True
+          XValues.DateTime = True
+          XValues.Name = 'X'
+          XValues.Multiplier = 1
+          XValues.Order = loAscending
+          YValues.DateTime = False
+          YValues.Name = 'Y'
+          YValues.Multiplier = 1
+          YValues.Order = loNone
+          EndXValues.DateTime = True
+          EndXValues.Name = 'EndX'
+          EndXValues.Multiplier = 1
+          EndXValues.Order = loNone
+          EndYValues.DateTime = False
+          EndYValues.Name = 'EndY'
+          EndYValues.Multiplier = 1
+          EndYValues.Order = loNone
+          StartXValues.DateTime = True
+          StartXValues.Name = 'X'
+          StartXValues.Multiplier = 1
+          StartXValues.Order = loAscending
+          StartYValues.DateTime = False
+          StartYValues.Name = 'Y'
+          StartYValues.Multiplier = 1
+          StartYValues.Order = loNone
+        end
+        object ArrowSeries2: TArrowSeries
+          Marks.ArrowLength = 0
+          Marks.BackColor = clSilver
+          Marks.Frame.Visible = False
+          Marks.Transparent = True
+          Marks.Visible = True
+          SeriesColor = clTeal
+          ShowInLegend = False
+          Title = 'flareInfo'
+          Pointer.Brush.Color = 13160660
+          Pointer.HorizSize = 1
+          Pointer.InflateMargins = False
+          Pointer.Pen.Width = 5
+          Pointer.Style = psRectangle
+          Pointer.VertSize = 1
+          Pointer.Visible = True
+          XValues.DateTime = True
+          XValues.Name = 'X'
+          XValues.Multiplier = 1
+          XValues.Order = loAscending
+          YValues.DateTime = False
+          YValues.Name = 'Y'
+          YValues.Multiplier = 1
+          YValues.Order = loNone
+          EndXValues.DateTime = True
+          EndXValues.Name = 'EndX'
+          EndXValues.Multiplier = 1
+          EndXValues.Order = loNone
+          EndYValues.DateTime = False
+          EndYValues.Name = 'EndY'
+          EndYValues.Multiplier = 1
+          EndYValues.Order = loNone
+          StartXValues.DateTime = True
+          StartXValues.Name = 'X'
+          StartXValues.Multiplier = 1
+          StartXValues.Order = loAscending
+          StartYValues.DateTime = False
+          StartYValues.Name = 'Y'
+          StartYValues.Multiplier = 1
+          StartYValues.Order = loNone
+        end
+        object Series4: TLineSeries
+          HorizAxis = aBothHorizAxis
+          Marks.ArrowLength = 8
+          Marks.Visible = False
+          SeriesColor = 10485760
+          ShowInLegend = False
+          ValueFormat = '0'
+          Dark3D = False
+          Pointer.HorizSize = 3
+          Pointer.InflateMargins = True
+          Pointer.Style = psCircle
+          Pointer.VertSize = 3
+          Pointer.Visible = True
+          XValues.DateTime = True
+          XValues.Name = 'X'
+          XValues.Multiplier = 1
+          XValues.Order = loAscending
+          YValues.DateTime = False
+          YValues.Name = 'Y'
+          YValues.Multiplier = 1
+          YValues.Order = loNone
+        end
+        object Series5: TLineSeries
+          HorizAxis = aBothHorizAxis
+          Marks.ArrowLength = 8
+          Marks.Visible = False
+          SeriesColor = 10485760
+          ShowInLegend = False
+          ValueFormat = '0'
+          Dark3D = False
+          Pointer.HorizSize = 3
+          Pointer.InflateMargins = True
+          Pointer.Style = psCircle
+          Pointer.VertSize = 3
+          Pointer.Visible = True
+          XValues.DateTime = True
+          XValues.Name = 'X'
+          XValues.Multiplier = 1
+          XValues.Order = loAscending
+          YValues.DateTime = False
+          YValues.Name = 'Y'
+          YValues.Multiplier = 1
+          YValues.Order = loNone
+        end
+        object Series6: TLineSeries
+          HorizAxis = aBothHorizAxis
+          Marks.ArrowLength = 8
+          Marks.Visible = False
+          SeriesColor = 10485760
+          ShowInLegend = False
+          ValueFormat = '0'
+          Dark3D = False
+          Pointer.HorizSize = 3
+          Pointer.InflateMargins = True
+          Pointer.Style = psCircle
+          Pointer.VertSize = 3
+          Pointer.Visible = True
+          XValues.DateTime = True
+          XValues.Name = 'X'
+          XValues.Multiplier = 1
+          XValues.Order = loAscending
+          YValues.DateTime = False
+          YValues.Name = 'Y'
+          YValues.Multiplier = 1
+          YValues.Order = loNone
+        end
+        object Series7: TLineSeries
+          HorizAxis = aBothHorizAxis
+          Marks.ArrowLength = 8
+          Marks.Visible = False
+          SeriesColor = 10485760
+          ShowInLegend = False
+          ValueFormat = '0'
+          Dark3D = False
+          Pointer.HorizSize = 3
+          Pointer.InflateMargins = True
+          Pointer.Style = psCircle
+          Pointer.VertSize = 3
+          Pointer.Visible = True
+          XValues.DateTime = True
+          XValues.Name = 'X'
+          XValues.Multiplier = 1
+          XValues.Order = loAscending
+          YValues.DateTime = False
+          YValues.Name = 'Y'
+          YValues.Multiplier = 1
+          YValues.Order = loNone
+        end
+        object Series8: TLineSeries
+          HorizAxis = aBothHorizAxis
+          Marks.ArrowLength = 8
+          Marks.Visible = False
+          SeriesColor = 10485760
+          ShowInLegend = False
+          ValueFormat = '0'
+          Dark3D = False
+          Pointer.HorizSize = 3
+          Pointer.InflateMargins = True
+          Pointer.Style = psCircle
+          Pointer.VertSize = 3
+          Pointer.Visible = True
+          XValues.DateTime = True
+          XValues.Name = 'X'
+          XValues.Multiplier = 1
+          XValues.Order = loAscending
+          YValues.DateTime = False
+          YValues.Name = 'Y'
+          YValues.Multiplier = 1
+          YValues.Order = loNone
+        end
+        object Series9: TLineSeries
+          HorizAxis = aBothHorizAxis
+          Marks.ArrowLength = 8
+          Marks.Visible = False
+          SeriesColor = 10485760
+          ShowInLegend = False
+          ValueFormat = '0'
+          Dark3D = False
+          Pointer.HorizSize = 3
+          Pointer.InflateMargins = True
+          Pointer.Style = psCircle
+          Pointer.VertSize = 3
+          Pointer.Visible = True
+          XValues.DateTime = True
+          XValues.Name = 'X'
+          XValues.Multiplier = 1
+          XValues.Order = loAscending
+          YValues.DateTime = False
+          YValues.Name = 'Y'
+          YValues.Multiplier = 1
+          YValues.Order = loNone
+        end
+      end
+      object Memo5: TMemo
+        Left = 496
+        Top = 32
+        Width = 433
+        Height = 161
+        TabOrder = 1
+      end
+      object Panel1: TPanel
+        Left = 40
+        Top = 168
+        Width = 345
+        Height = 217
+        TabOrder = 2
+        Visible = False
+        object Label8: TLabel
+          Left = 32
+          Top = 24
+          Width = 125
+          Height = 23
+          Caption = 'focal len (mm)'
+        end
+        object Label9: TLabel
+          Left = 32
+          Top = 64
+          Width = 122
+          Height = 23
+          Caption = 'pixel dim (um)'
+        end
+        object Label10: TLabel
+          Left = 32
+          Top = 104
+          Width = 85
+          Height = 23
+          Caption = 'dec (deg)'
+        end
+        object Result: TLabel
+          Left = 160
+          Top = 176
+          Width = 48
+          Height = 23
+          Hint = 'secs'
+          Caption = 'result'
+        end
+        object piccnt: TLabel
+          Left = 32
+          Top = 144
+          Width = 92
+          Height = 23
+          Caption = 'pixel count'
+        end
+        object EditFL: TEdit
+          Left = 184
+          Top = 16
+          Width = 121
+          Height = 31
+          TabOrder = 0
+          Text = '1700'
+        end
+        object EditPic: TEdit
+          Left = 184
+          Top = 56
+          Width = 121
+          Height = 31
+          TabOrder = 1
+          Text = '9'
+        end
+        object EditDec: TEdit
+          Left = 184
+          Top = 96
+          Width = 121
+          Height = 31
+          TabOrder = 2
+          Text = '0'
+        end
+        object Button9: TButton
+          Left = 24
+          Top = 176
+          Width = 75
+          Height = 25
+          Caption = 'go'
+          TabOrder = 3
+          OnClick = Button9Click
+        end
+        object EditPicCnt: TEdit
+          Left = 184
+          Top = 136
+          Width = 121
+          Height = 31
+          TabOrder = 4
+          Text = '600'
+        end
+      end
+      object Memo4: TMemo
+        Left = 304
+        Top = 16
+        Width = 609
+        Height = 193
+        ScrollBars = ssVertical
+        TabOrder = 3
+      end
+    end
     object bufferTab: TTabSheet
       Caption = 'Buffer'
-      ImageIndex = 3
+      ImageIndex = 4
       object Label7: TLabel
         Left = 40
         Top = 32
@@ -530,22 +890,13 @@ object Form1: TForm1
         ScrollBars = ssVertical
         TabOrder = 1
       end
-      object Memo4: TMemo
-        Left = 456
-        Top = 64
-        Width = 473
-        Height = 81
-        ScrollBars = ssVertical
-        TabOrder = 2
-        Visible = False
-      end
       object Button7: TButton
         Left = 600
         Top = 536
         Width = 75
         Height = 25
         Caption = 'Button7'
-        TabOrder = 3
+        TabOrder = 2
         Visible = False
         OnClick = Button7Click
       end
@@ -569,12 +920,12 @@ object Form1: TForm1
           
             'graph to grab the times and then it puts it into the AAVSO forma' +
             't report file, ready for submission at '
-          'the end of the month.'#10#13#10#10
-          ''
+          'the end of the month.'#10
+          #10
           
             'First step is to set your observer id and the directory of the r' +
-            'eport files.'#10#13#10#10
-          ''
+            'eport files.'#10
+          #10
           
             'From there you select a batch of observation files. These files ' +
             'need to be in the SuperSID format (txt '
@@ -585,15 +936,15 @@ object Form1: TForm1
           '# Frequency = 18300'#10
           '2015-03-01 00:00:00, 50885.6558753'#10
           '2015-03-01 00:00:05, 50885.6558753'#10
-          '2015-03-01 00:00:10, 50885.6558753'#10#13#10#10
-          ''
+          '2015-03-01 00:00:10, 50885.6558753'#10
+          #10
           
             'If your log files are in a different format but have the same da' +
             'ta, contact me and I'#39'll see about '
           
             'making modifications to the application for you. A141@GASilvis.n' +
-            'et.'#10#13#10#10
-          ''
+            'et.'#10
+          #10
           
             'If you see a flare event in the graph, zoom in on it by drawing ' +
             'a box around it. You can also scroll the '
@@ -620,16 +971,16 @@ object Form1: TForm1
             'finiteness field. You can add D, E '
           
             'and U modifiers to the edit boxes as appropriate. Now you can cl' +
-            'ick the "add to report" button. '#10#13#10#10
-          ''
+            'ick the "add to report" button. '#10
+          #10
           
             'When you click on the graph the time will be put in the edit box' +
             ' with the radio check box lit. These will '
           
             'light up in turn. If you need to go back and change an entry, ju' +
             'st reclick the radio icon so that your '
-          'graph click will go to the right place.'#10#13#10#10
-          ''
+          'graph click will go to the right place.'#10
+          #10
           
             'Report files are named <observer ID><year><mo>.txt. The appropri' +
             'ate report file is opened based '
@@ -638,48 +989,46 @@ object Form1: TForm1
             'tly from the Report tab (eg, to remove a '
           
             'record) and then you need to save the updated report with your e' +
-            'dits.'#10#13#10#10
-          ''
+            'dits.'#10
+          #10
           
             'The Next/Prev File buttons take you through the list of files yo' +
-            'u selected with the File/Open process.'#10#13#10#10
-          ''
+            'u selected with the File/Open process.'#10
+          #10
           
             'The main screen, the Graph tab, will show you the last log file ' +
             'that you processed. Helpful if you are '
           
             'scanning the files once a week as it shows you where you left of' +
-            'f.'#10#13#10#10
-          ''
+            'f.'#10
+          #10
           
             'If you have a graph open and your data is also on the Stanford S' +
             'ID Data Access website, you can '
           
             'click on the button below the graph and view that data in a brow' +
             'ser. This is handy as that display will '
-          'include the known flares on the graph.'#10#13#10#10
-          #13#10#10
-          ''
+          'include the known flares on the graph.'#10
+          #10
+          #10
           
             'Instructions for extracting the event times and report format is' +
             ' taken from:'#10
           
             'http://www.aavso.org/reducing-data-gathered-vlf-monitoring-syste' +
             'ms'#10
-          'with minor modifications.'#10#13#10#10
-          ''
+          'with minor modifications.'#10
+          #10
           'Reducing Data Gathered by VLF Monitoring Systems'#10
           
             '(Extracted from SID Technical Bulletin Vol. 3, Number 4, Oct. 19' +
-            '92)'#10#13#10#10
-          ''
+            '92)'#10
+          #10
           
             'The reduction process is quite simple, and consists of the steps' +
             ' which follow. First, the universal time '
-          
-            'for each of three event-phases must be measured for each SID. '#10#13 +
-            #10#10
-          ''
+          'for each of three event-phases must be measured for each SID. '#10
+          #10
           
             'Event Start: The moment when an event begins. Be aware that the ' +
             'amplitude of different events '
@@ -691,8 +1040,8 @@ object Form1: TForm1
             'ed to the recorded time. Look for the '
           
             'beginning of the sharp rise, same as for the event max (see belo' +
-            'w).'#10#13#10#10
-          ''
+            'w).'#10
+          #10
           
             'Event End: Of the three times, the end time is the most difficul' +
             't to determine. It is defined as the '
@@ -702,15 +1051,15 @@ object Form1: TForm1
           
             'In the latter situation, the letter '#39'D'#39' (after) is appended to t' +
             'hat time, which in turn becomes the start '
-          'time for the following event.'#10#13#10#10
-          ''
+          'time for the following event.'#10
+          #10
           
             'Event Maximum: The moment when the ascending (descending in the ' +
             'case of inverted events) branch '
           
             'slows its sharp rise. Note that this generally does not coincide' +
-            ' with the event'#39's peak amplitude.'#10#13#10#10
-          ''
+            ' with the event'#39's peak amplitude.'#10
+          #10
           
             'If the trace goes off-scale as maximum is approached, or is inte' +
             'rfered with in some other manner '
@@ -722,8 +1071,8 @@ object Form1: TForm1
             ' and the last determinable time is '
           
             'fourteen hours, ten minutes (1410), the time is recorded as 141O' +
-            'U.'#10#13#10#10
-          ''
+            'U.'#10
+          #10
           'Duration'#9#9'Importance'#10
           '< 19 minutes'#9'1-'#10
           '19-25'#9#9'1'#10
@@ -741,8 +1090,8 @@ object Form1: TForm1
           
             'time from the end time. This is computed automatically for you. ' +
             'The table above associates the '
-          'Importance rating with event duration.'#10#13#10#10
-          ''
+          'Importance rating with event duration.'#10
+          #10
           
             'With respect to the observer'#39's typical daily trace, a class 1 SI' +
             'D is an event with small intensity '
@@ -751,8 +1100,8 @@ object Form1: TForm1
             'tensity event with a fairly long '
           
             'duration, and a class 3 describes a SID with a '#39'great'#39' change in' +
-            ' intensity and long duration.'#10#13#10#10
-          ''
+            ' intensity and long duration.'#10
+          #10
           'Confidence'#9#9'Definition'#10
           'Questionable'#9#9'0'#10
           'Possible'#9#9#9'1'#10
@@ -777,9 +1126,9 @@ object Form1: TForm1
             ' sources. Other observers'#39' results '
           
             'will be compared to eliminate suspect events before a final repo' +
-            'rt is submitted to the NGDC.'#10#13#10#10
-          #13#10#10
-          ''
+            'rt is submitted to the NGDC.'#10
+          #10
+          #10
           
             'Sometimes you need to shut down the sidmonitor. Before you do yo' +
             'u should save the buffered data '
@@ -789,22 +1138,22 @@ object Form1: TForm1
           
             'into log files (with just part of a days data) that can then be ' +
             'surveyed with the grabber tool. See the '
-          'Buffer tab. '#10#13#10#10
-          ''
+          'Buffer tab. '#10
+          #10
           
             'There is a review feature where from the Report screen you can d' +
             'ouble click on a report line and the '
           
             'program will show you the log file that derived that report line' +
             ' from. That'#39's assuming the log files are '
-          'in the currently specified log directory.'#10#13#10#10
-          ''
+          'in the currently specified log directory.'#10
+          #10
           
             'Any problems with this program or suggestions for improvement, p' +
             'lease email me at '
-          'A141@GASilvis.net .'#10#13#10#10
-          ''
-          'George'#10)
+          'A141@GASilvis.net .'#10
+          #10
+          'George')
         ReadOnly = True
         ScrollBars = ssVertical
         TabOrder = 0
@@ -860,8 +1209,8 @@ object Form1: TForm1
     DesignFormHeight = 741
     DesignFormClientWidth = 971
     DesignFormClientHeight = 683
-    DesignFormLeft = 337
-    DesignFormTop = 127
+    DesignFormLeft = 341
+    DesignFormTop = 42
     Font.Charset = ANSI_CHARSET
     Font.Color = clWindowText
     Font.Height = -20
@@ -907,5 +1256,9 @@ object Form1: TForm1
     ConnectionType = ftpDirect
     Left = 268
     Top = 547
+  end
+  object SaveDialog1: TSaveDialog
+    Left = 796
+    Top = 82
   end
 end
