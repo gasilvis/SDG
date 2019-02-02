@@ -1,0 +1,16 @@
+
+reports/
+
+logs/
+
+*.~*
+
+cal 20141230\.zip
+
+*.obj
+
+ICSlog\.txt
+
+vsp\.pl
+
+SidDataGrabber\.tds
