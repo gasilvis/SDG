@@ -25,6 +25,8 @@
 #include <NMURL.hpp>
 //#include "SHDocVw_OCX.h"
 #include <ArrowCha.hpp>
+#include "FtpCli.hpp"
+#include "WSocket.hpp"
 //#include <IcsLogger.hpp>
 
 //---------------------------------------------------------------------------
@@ -75,10 +77,7 @@ __published:	// IDE-managed Components
    TButton *Button5;
    TLabel *lastFileLabel;
    TMemo *Memo3;
-   TMemo *Memo4;
-   TNMHTTP *NMHTTP1;
    THttpCli *HttpCli1;
-   TNMURL *NMURL1;
    TButton *Button4;
    TLabel *versionLabel;
    TButton *Button7;
@@ -90,6 +89,38 @@ __published:	// IDE-managed Components
    TMenuItem *LogTypeLASPextract;
    TEdit *stationEdit;
    TEdit *freqEdit;
+   TLabel *testLabel;
+   TArrowSeries *Series2;
+   TFtpClient *FtpClient1;
+   TArrowSeries *Series3;
+   TLabel *Label5;
+   TButton *Button8;
+   TTabSheet *graphsTab;
+   TChart *Chart2;
+   TArrowSeries *ArrowSeries1;
+   TArrowSeries *ArrowSeries2;
+   TLineSeries *Series4;
+   TLineSeries *Series5;
+   TLineSeries *Series6;
+   TLineSeries *Series7;
+   TLineSeries *Series8;
+   TLineSeries *Series9;
+   TMemo *Memo5;
+   TPanel *Panel1;
+   TLabel *Label8;
+   TEdit *EditFL;
+   TLabel *Label9;
+   TEdit *EditPic;
+   TLabel *Label10;
+   TEdit *EditDec;
+   TButton *Button9;
+   TLabel *Result;
+   TLabel *piccnt;
+   TEdit *EditPicCnt;
+   TButton *Button10;
+   TSaveDialog *SaveDialog1;
+   TLabel *Label11;
+   TMemo *Memo4;
    void __fastcall Open1Click(TObject *Sender);
    void __fastcall Quit1Click(TObject *Sender);
    void __fastcall FormCreate(TObject *Sender);
@@ -113,6 +144,10 @@ __published:	// IDE-managed Components
    void __fastcall LogTypeSuperSIDClick(TObject *Sender);
    void __fastcall stationEditExit(TObject *Sender);
    void __fastcall freqEditExit(TObject *Sender);
+   void __fastcall Memo1DblClick(TObject *Sender);
+   void __fastcall Button8Click(TObject *Sender);
+   void __fastcall Button9Click(TObject *Sender);
+   void __fastcall Button10Click(TObject *Sender);
 private:	// User declarations
 
 public:		// User declarations
@@ -122,6 +157,8 @@ public:		// User declarations
    void __fastcall TForm1::logMsg(TObject *Sender, AnsiString msg);
    bool __fastcall TForm1::IsSafeChar(int ch);
    AnsiString __fastcall TForm1::EncodeURIComponent(AnsiString ASrc);
+   bool __fastcall TForm1::httpGet(AnsiString URL, char* buffer, int bufsize);
+   short __fastcall TForm1::getFlareData(int yr, int mo, int day);
 };
 //---------------------------------------------------------------------------
 extern PACKAGE TForm1 *Form1;
