@@ -1,6 +1,6 @@
 //---------------------------------------------------------------------------
 
-#include <vcl.h>              
+#include <vcl.h>
 #pragma hdrstop
 
 #include "Unit1.h"
@@ -19,9 +19,11 @@
 #pragma resource "*.dfm"
 TForm1 *Form1;
 
-#define Version 1.11
+#define Version 1.12
 // when you change this, update gasilvis.com/SID/SIDlog.php which should return this value
 /*
+  1.12
+  - ftp site moved
   1.11
   - set DecimalSeparator so european's don't get commas for decimals
   - button to save chart as bmp
@@ -174,6 +176,7 @@ void __fastcall TForm1::FormCreate(TObject *Sender)
    LogTypes[lt]->Checked= true;
    freqEdit->Text= Frequency= ini->ReadString("Setup", "lastFrequency", 0);
    stationEdit->Text= StationID= ini->ReadString("Setup", "lastStation", "   ");
+   FlareFtpCheckBox->Checked= ini->ReadBool("Setup", "FlareFtp", true);
    delete ini;
 
 }
@@ -856,15 +859,33 @@ short __fastcall TForm1::getFlareData(int yr, int mo, int day)
       char buf[256];
       int x;
       testLabel->Caption="";
-//eg    ftp://ftp.swpc.noaa.gov/pub/warehouse/2015/2015_events/20150301events.txt
-      FtpClient1->HostName= "ftp.swpc.noaa.gov";
-      FtpClient1->HostDirName= s.sprintf("pub/warehouse/%04d/%04d_events", yr, yr);
-      FtpClient1->HostFileName= s.sprintf("%04d%02d%02devents.txt", yr, mo, day);
-      if(s==lastFlare) return flareCount; // did it already
-      FtpClient1->LocalFileName= "flare.txt";
-      if(FtpClient1->Receive()) {
-         fp= fopen("flare.txt", "r");
-         flareCount= 0;
+      flareCount= 0;
+      AnsiString eventfilename= s.sprintf("%04d%02d%02devents.txt", yr, mo, day);
+      if(FlareFtpCheckBox->Checked) {
+         //eg    ftp://ftp.swpc.noaa.gov/pub/warehouse/2015/2015_events/20150301events.txt
+         FtpClient1->HostName= "ftp.swpc.noaa.gov";
+         //FtpClient1->HostDirName= s.sprintf("pub/warehouse/%04d/%04d_events", yr, yr);
+         FtpClient1->HostDirName= "pub/indices/events";
+         FtpClient1->HostFileName= eventfilename;
+         if(eventfilename==lastFlare)
+            return flareCount; // did it already
+         FtpClient1->LocalFileName= "flare.txt";
+         if(FtpClient1->Receive()) {
+            fp= fopen("flare.txt", "r");
+         } else { // failed...
+            Form1->Memo4->Lines->Add("getflaredata failed!");
+            Form1->Memo4->Lines->Add(FtpClient1->HostName+ "/"+ FtpClient1->HostDirName+ "/"+ FtpClient1->HostFileName);
+            lastFlare= "";
+            Form1->Memo4->Lines->Add("error msg: "+ FtpClient1->ErrorMessage);
+            testLabel->Caption= "failed to get flare data";
+            return flareCount;
+         }
+      } else { // look for local file
+         strcpy(buf, (dataDir+ "\\FlareEvents\\"+ eventfilename).c_str());
+         Form1->Memo4->Lines->Add(buf);
+         fp= fopen(buf, "rt");
+      }
+      if(fp) {
          while(fgets(buf, sizeof(buf), fp) && flareCount< FLAREMAX) {
             if(buf[43]=='X' || buf[43]=='F') { // XRA  xray or FLA flare event
                flares[flareCount].type= buf[43];
@@ -877,16 +898,11 @@ short __fastcall TForm1::getFlareData(int yr, int mo, int day)
                flareCount++;
             }
          }
-         lastFlare= s;
+         lastFlare= eventfilename;
          fclose(fp);
-//         remove("flare.txt");
-      } else { // failed...
-         Form1->Memo4->Lines->Add("getflaredata failed!");
-         Form1->Memo4->Lines->Add(FtpClient1->HostName+ "/"+ FtpClient1->HostDirName+ "/"+ FtpClient1->HostFileName);
-         lastFlare= "";
-         flareCount= 0;
-         Form1->Memo4->Lines->Add("error msg: "+ FtpClient1->ErrorMessage);
-         testLabel->Caption= "failed to get flare data";
+         testLabel->Caption= s.sprintf("%d event%sreported", flareCount, (flareCount==1)?" ":"s ");
+      } else {
+         testLabel->Caption= "no flare file found"; 
       }
       return flareCount;
 }
@@ -1034,6 +1050,15 @@ void __fastcall TForm1::Button10Click(TObject *Sender)
     if(SaveDialog1->Execute()) {
        Chart1->SaveToBitmapFile(SaveDialog1->FileName);
     }
+}
+//---------------------------------------------------------------------------
+
+
+void __fastcall TForm1::FlareFtpCheckBoxClick(TObject *Sender)
+{
+      TIniFile *ini= new TIniFile(INIfilename);
+      ini->WriteBool("Setup", "FlareFtp", FlareFtpCheckBox->Checked);
+      delete ini;
 }
 //---------------------------------------------------------------------------
 

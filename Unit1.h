@@ -121,6 +121,7 @@ __published:	// IDE-managed Components
    TSaveDialog *SaveDialog1;
    TLabel *Label11;
    TMemo *Memo4;
+   TCheckBox *FlareFtpCheckBox;
    void __fastcall Open1Click(TObject *Sender);
    void __fastcall Quit1Click(TObject *Sender);
    void __fastcall FormCreate(TObject *Sender);
@@ -148,6 +149,7 @@ __published:	// IDE-managed Components
    void __fastcall Button8Click(TObject *Sender);
    void __fastcall Button9Click(TObject *Sender);
    void __fastcall Button10Click(TObject *Sender);
+   void __fastcall FlareFtpCheckBoxClick(TObject *Sender);
 private:	// User declarations
 
 public:		// User declarations

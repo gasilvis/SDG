@@ -12,6 +12,8 @@ From there you select a batch of observation files. These files need to be in th
 
 If your log files are in a different format but have the same data, contact me and I'll see about making modifications to the application for you. A141@GASilvis.net.
 
+SDG will try to get the official flare data from NOAA via FTP. If this is not working, then uncheck the flare ftp box and collect the event files and put them in a FlareEvents directory inside your data directory.
+
 If you see a flare event in the graph, zoom in on it by drawing a box around it. You can also scroll the graph if you hold down the Ctrl key while holding the Right Mouse Button. Note that the graph also shows the sunrise/sunset times of the monitoring site as well as that of the transmitting station. Flares are going to happen in the daylight period of the station and site. Also displayed on the graph are known GEOS detected XRay events. A spike in the graph right after an XRay event is a good bet. This is similar to the data displayed at the Standford website. With the zoom you will then have the resolution to accurately pick the time to the minute by clicking on the graph. After clicking on start, max and end review the importance computed and set the definiteness field. You can add D, E and U modifiers to the edit boxes as appropriate. Now you can click the "add to report" button. 
 
 When you click on the graph the time will be put in the edit box with the radio check box lit. These will light up in turn. If you need to go back and change an entry, just reclick the radio icon so that your graph click will go to the right place.

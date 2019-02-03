@@ -83,7 +83,7 @@ object Form1: TForm1
       object testLabel: TLabel
         Left = 520
         Top = 608
-        Width = 193
+        Width = 81
         Height = 23
         Caption = 'testLabel'
       end
@@ -221,6 +221,7 @@ object Form1: TForm1
         Top = 96
         Width = 713
         Height = 89
+        Hint = 'If unchecked SDG will look in the "flaredata" directory'
         Caption = 'Event'
         TabOrder = 1
         object Label1: TLabel
@@ -424,6 +425,15 @@ object Form1: TForm1
         Caption = 'Save as BMP'
         TabOrder = 11
         OnClick = Button10Click
+      end
+      object FlareFtpCheckBox: TCheckBox
+        Left = 752
+        Top = 136
+        Width = 193
+        Height = 17
+        Caption = 'FTP for flare data'
+        TabOrder = 12
+        OnClick = FlareFtpCheckBoxClick
       end
     end
     object reportTab: TTabSheet
@@ -760,13 +770,6 @@ object Form1: TForm1
           YValues.Order = loNone
         end
       end
-      object Memo5: TMemo
-        Left = 496
-        Top = 32
-        Width = 433
-        Height = 161
-        TabOrder = 1
-      end
       object Panel1: TPanel
         Left = 40
         Top = 168
@@ -860,6 +863,13 @@ object Form1: TForm1
         ScrollBars = ssVertical
         TabOrder = 3
       end
+      object Memo5: TMemo
+        Left = 488
+        Top = 248
+        Width = 433
+        Height = 161
+        TabOrder = 1
+      end
     end
     object bufferTab: TTabSheet
       Caption = 'Buffer'
@@ -944,6 +954,14 @@ object Form1: TForm1
           
             'making modifications to the application for you. A141@GASilvis.n' +
             'et.'#10
+          #10
+          
+            'SDG will try to get the official flare data from NOAA via FTP. I' +
+            'f this is not working, then uncheck the '
+          
+            'flare ftp box and collect the event files and put them in a Flar' +
+            'eEvents directory inside your data '
+          'directory.'#10
           #10
           
             'If you see a flare event in the graph, zoom in on it by drawing ' +

@@ -1,0 +1,73 @@
+
+from http://sidstation.loudet.org/stations-list-en.xhtml   5/5/2015
+
+VTX1		16300	South Vijayanarayanam, India
+VTX2		17000	South Vijayanarayanam, India
+VTX3		18200	South Vijayanarayanam, India
+VTX4		19200	South Vijayanarayanam, India
++8.387015 +77.752762
+JXN	(1)	16400	Novik, Norway
++66.974353 +13.873617
+SAQ	(2)	17200	Grimeton, Sweden
++57.113171 +12.397277
+GBZ		19580	Anthorn, UK
++54.911643 -3.278456
+NWC		19800	Harold E. Holt, North West Cape, Exmouth, Australia
+-21.816328 +114.165586
+ICV		20270	Isola di Tavolara, Italy
++40.923127 +9.731011
+FTA	(4)	16800 20900	Sainte-Assise, France
++48.544632 +2.579429
+NPM		21400	Pearl Harbour, Lualuahei, HI
++21.420166 -158.151140
+HWU	(5)	15100 18300 21750 22600	Rosnay, France
++46.713129 +1.245248
+GQD		22100	Skelton, UK
++54.731799 -2.883033
+NDT		22200	Ebino, Japan
++32.082084 +130.827960
+DHO38	(6)	23400	Rhauderfehn, Germany
++53.078900 +7.615000
+NAA		24000	Cutler, ME
++44.644936 -67.281639
+NLK		24800	Oso Wash, Jim Creek, WA
++48.203487 -121.916827
+unid25		25000	Mokpo, South Korea
++34.679068 +126.445383
+NML	(7)	25200	La Moure, ND
++46.365990 -98.335638
+TBB		26700	Bafa, Turkey
++37.412725 +27.323342
+NRK/TFK		37500	Grindavik, Iceland
++63.850365 -22.466773
+JJY-40	(8)	40000	Mount Ootakadoya, Fukushima prefecture, Japan
++37.372598 +140.848906
+SRC		40400	Varberg, Sweden
++57.113171 +12.397277
+NAU		40800	Aguada, Puerto Rico
++18.398762 -67.177599
+NSY		45900	Niscemi, Italy
++37.125660 +14.436416
+SXA		49000	Marathon, Greece
++38.145170 +24.019709
+GYW1		51950	Crimond, UK
++57.617464 -1.887595
+MSF	(9)	60000	Anthorn, UK
++54.911195 -3.279302
+WWVB	(10)	60000	Fort Collins, Colorado
++40.677722 -105.047153
+JJY-60	(11)	60000	Mount Hagane, Fukuoka prefecture, Japan
++33.465433 +130.175415
+FUG		62600	La Régine, France
++43.386798 +2.097388
+FUE		65800	Kerlouan, France
++48.637672 -4.350725
+BPC	(12)	68500	Shangqiu, Henan Province, China
++34.456519 +115.836937
+CFH		73600	Halifax, Canada
++44.967276 -63.982160
+DCF77	(13)	77500	Mainflingen, Germany
++50.015411 +9.008307
+GYN2		81000	Inskip, UK
++53.830071 -2.834266
+Notes:
