@@ -8,6 +8,7 @@
 #include <FileCtrl.hpp>
 #include <stdio.h>
 #include <math.h>
+#include <dir.h>
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 #pragma link "ElastFrm"
@@ -19,9 +20,11 @@
 #pragma resource "*.dfm"
 TForm1 *Form1;
 
-#define Version 1.12
+#define Version 1.13
 // when you change this, update gasilvis.com/SID/SIDlog.php which should return this value
 /*
+  1.13
+  - call http client agent needed to be changed so the SIDlog call would work.
   1.12
   - ftp site moved
   1.11

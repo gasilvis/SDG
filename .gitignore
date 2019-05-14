@@ -20,3 +20,5 @@ SidDataGrabber\.INI
 SidDataGrabber\.dsk
 
 SidDataGrabber\.zip
+
+*.res
